@@ -119,11 +119,11 @@ AUTH_PASSWORD_VALIDATORS = [
 """
 Email settings
 """
-EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST = "smtp.sendgrid.net"
 DEFAULT_FROM_EMAIL = "feedback@bmsit.in"
-EMAIL_PORT = 587
-EMAIL_HOST_USER = "feedback@bmsit.in"
-EMAIL_HOST_PASSWORD = "Feedback@01"
+EMAIL_PORT = 465
+EMAIL_HOST_USER = "apikey"
+EMAIL_HOST_PASSWORD = "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"
 EMAIL_USE_TLS = True
 
 
