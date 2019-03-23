@@ -26,7 +26,7 @@ MEDIA_DIR = os.path.join(BASE_DIR, "media")
 SECRET_KEY = "l(p1)k6rv%d=6pv0cyazwli*ps21r4+&4%d+ka57%-z9yx_vkl"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*", "feedback360.bmsit.ac.in"]
 
@@ -120,9 +120,9 @@ AUTH_PASSWORD_VALIDATORS = [
 Email settings
 """
 EMAIL_HOST = "smtp.gmail.com"
-DEFAULT_FROM_EMAIL = "feedback@bmsit.in"
+DEFAULT_FROM_EMAIL = "feedbackotp@bmsit.in"
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "feedback@bmsit.in"
+EMAIL_HOST_USER = "feedbackotp@bmsit.in"
 EMAIL_HOST_PASSWORD = "Feedback@01"
 EMAIL_USE_TLS = True
 
