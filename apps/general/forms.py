@@ -36,5 +36,5 @@ class FileUploadForm(forms.Form):
     file = forms.FileField()
 
     def clean(self):
-        cleaned_data = super(ContactForm, self).clean()
+        cleaned_data = super(FileUploadForm, self).clean()
         file = cleaned_data.get('file')

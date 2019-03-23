@@ -1000,7 +1000,7 @@ def easy_upload_subject(request):
 		updated = []
 		added = []
 		headers = ["name","code","type"]
-		types = ['T', 'E', 'P']
+		types = ['T', 'E', 'P', 'L', 'EL']
 
 		try:
 			csv_data = pd.read_csv(request.FILES['file'])
@@ -1054,6 +1054,22 @@ def easy_upload_subject(request):
 							sub.save()
 							updated.append(data)
 
+						elif data[2].upper() == 'L':
+							sub.name=data[0].title()
+							sub.theory=False
+							sub.elective=False
+							sub.project=False
+							sub.save()
+							updated.append(data)
+
+						elif data[2].upper() == 'EL':
+							sub.name=data[0].title()
+							sub.theory=False
+							sub.elective=True
+							sub.project=False
+							sub.save()
+							updated.append(data)
+
 					except:
 						if data[2].upper() == 'T':
 							Subject.objects.create(code=data[1].upper(), name=data[0], theory=True, elective=False, project=False)
@@ -1063,6 +1079,12 @@ def easy_upload_subject(request):
 							added.append(data)
 						elif data[2].upper() == 'P':
 							Subject.objects.create(code=data[1].upper(), name=data[0], theory=False, elective=False, project=True)
+							added.append(data)
+						elif data[2].upper() == 'L':
+							Subject.objects.create(code=data[1].upper(), name=data[0], theory=False, elective=False, project=False)
+							added.append(data)
+						elif data[2].upper() == 'EL':
+							Subject.objects.create(code=data[1].upper(), name=data[0], theory=False, elective=True, project=False)
 							added.append(data)
 
 		except Exception as e:
