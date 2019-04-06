@@ -1276,7 +1276,7 @@ def easy_upload_users(request):
 		errors = []
 		updated = []
 		added = []
-		headers = ["username","first_name","email","is_active","phone","sem","sec","ug","batch","sub_batch","elective_1","elective_2"]
+		headers = ["username","first_name","email","is_active","phone","sem","sec","ug","batch","sub_batch","elective_1","elective_2","done"]
 		bool_types = ['Y', 'N']
 
 		try:
@@ -1296,7 +1296,7 @@ def easy_upload_users(request):
 
 
 			# Check for null values
-			frames = [csv_data.iloc[:,:2], csv_data.iloc[:,3:4], csv_data.iloc[:,5:8]]
+			frames = [csv_data.iloc[:,:2], csv_data.iloc[:,3:4], csv_data.iloc[:,5:8], csv_data.iloc[:,12:13]]
 			nullvalues = pd.concat(frames, axis=1, sort=False)
 			print(nullvalues)
 			if nullvalues.isnull().values.any():
@@ -1313,6 +1313,13 @@ def easy_upload_users(request):
 			is_active = csv_data["is_active"].unique()
 
 			for i in is_active:
+				if i.upper() not in bool_types:
+					errors.append("'%s' is an invalid is_active value, Options are Y (Yes) or N (No)" %(i))
+
+			# Check if right done value is entered or not
+			done = csv_data["done"].unique()
+
+			for i in done:
 				if i.upper() not in bool_types:
 					errors.append("'%s' is an invalid is_active value, Options are Y (Yes) or N (No)" %(i))
 
@@ -1409,6 +1416,11 @@ def easy_upload_users(request):
 						if not is_null:
 							elective_2 = data[11].upper()
 
+						if data[12].upper() == 'Y':
+							done = True
+						else:
+							done = False
+
 						user = User.objects.get(username=username)
 						user.password=password
 						user.first_name=first_name
@@ -1422,6 +1434,7 @@ def easy_upload_users(request):
 						user.user_type.add(user_type)
 						user.batch = batch
 						user.sub_batch = sub_batch
+						user.done = done
 
 						# Check for number of elective
 						electives = []
@@ -1503,7 +1516,12 @@ def easy_upload_users(request):
 						if not is_null:
 							elective_2 = data[11].upper()
 
-						user_obj = User.objects.create(username=username, password=password, first_name=first_name, email=email, is_active=is_active, phone=phone, sem=str(sem), sec=sec, department=department, ug=ug, batch=batch, sub_batch=sub_batch)
+						if data[12].upper() == 'Y':
+							done = True
+						else:
+							done = False
+
+						user_obj = User.objects.create(username=username, password=password, first_name=first_name, email=email, is_active=is_active, phone=phone, sem=str(sem), sec=sec, department=department, ug=ug, batch=batch, sub_batch=sub_batch, done=done)
 
 						user_obj.user_type.add(user_type)
 
