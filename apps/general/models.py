@@ -100,7 +100,7 @@ class Subject(models.Model):
 	"""
 
     name = models.CharField("Subject Name", max_length=50)
-    code = models.CharField("Subject Code", max_length=50, unique=True)
+    code = models.CharField("Subject Code", max_length=50)
 
     theory = models.BooleanField(default=True)
     elective = models.BooleanField(default=False)
@@ -135,6 +135,7 @@ class Teaches(models.Model):
     ug = models.BooleanField(default=False)
 
     count = models.IntegerField("Student Count", default=0, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.teacher.first_name + " -> " + self.subject.name

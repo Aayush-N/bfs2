@@ -1118,7 +1118,7 @@ def easy_upload_teaches(request):
 		errors = []
 		updated = []
 		added = []
-		headers = ["teacher","subject","sem","sec","batch","sub_batch","ug","count"]
+		headers = ["teacher","subject","sem","sec","batch","sub_batch","ug","count","is_active"]
 		ug_types = ['Y', 'N']
 
 		try:
@@ -1128,7 +1128,7 @@ def easy_upload_teaches(request):
 			head = list(csv_data.columns.values)
 
 			# Check if all the Headers are there
-			if len(head) == 8:
+			if len(head) == 9:
 				for i in range(len(headers)):
 					if head[i].lower() != headers[i]:
 						errors.append("'%s' is an invalid field or in wrong order, Please rectify." %(head[i]))
@@ -1148,6 +1148,13 @@ def easy_upload_teaches(request):
 			for i in ug:
 				if i.upper() not in ug_types:
 					errors.append("'%s' is an invalid ug value, Options are Y (Yes) or N (No)" %(i))
+
+			# Check if right Ug value is entered or not
+			is_active = csv_data["is_active"].unique()
+
+			for i in is_active:
+				if i.upper() not in ug_types:
+					errors.append("'%s' is an invalid is_active value, Options are Y (Yes) or N (No)" %(i))
 
 			# Check if the teacher exists or not
 			teachers = csv_data["teacher"].unique()
@@ -1181,6 +1188,10 @@ def easy_upload_teaches(request):
 						teacher = User.objects.get(username=data[0])
 						sem = Semester.objects.get(sem=data[2])
 						subject = Subject.objects.get(code=data[1].upper())
+						if data[8] == 'Y':
+							is_active = True
+						else:
+							is_active = False
 						# Check if Batch is null
 						batch = None
 						is_null = False
@@ -1207,12 +1218,14 @@ def easy_upload_teaches(request):
 						if data[6].upper() == 'Y':
 							teaches.ug=True
 							teaches.count=data[7]
+							teaches.is_active=is_active
 							teaches.save()
 							updated.append(data)
 
 						elif data[6].upper() == 'N':
 							teaches.ug=False
 							teaches.count=data[7]
+							teaches.is_active=is_active
 							teaches.save()
 							updated.append(data)
 
@@ -1240,10 +1253,10 @@ def easy_upload_teaches(request):
 						sem = Semester.objects.get(sem=data[2])
 						subject = Subject.objects.get(code=data[1].upper())
 						if data[6].upper() == 'Y':
-							Teaches.objects.create(teacher=teacher, subject=subject, sem=sem, sec=data[3], batch=batch, sub_batch=sub_batch, ug=True, count=data[7], department=request.user.department)
+							Teaches.objects.create(teacher=teacher, subject=subject, sem=sem, sec=data[3], batch=batch, sub_batch=sub_batch, ug=True, count=data[7], department=request.user.department, is_active=is_active)
 							added.append(data)
 						elif data[6].upper() == 'N':
-							Teaches.objects.create(teacher=teacher, subject=subject, sem=sem, sec=data[3], batch=batch, sub_batch=sub_batch, ug=False, count=data[7], department=request.user.department)
+							Teaches.objects.create(teacher=teacher, subject=subject, sem=sem, sec=data[3], batch=batch, sub_batch=sub_batch, ug=False, count=data[7], department=request.user.department, is_active=is_active)
 							added.append(data)
 
 		except Exception as e:
@@ -1287,7 +1300,7 @@ def easy_upload_users(request):
 			head = list(csv_data.columns.values)
 
 			# Check if all the Headers are there
-			if len(head) == 12:
+			if len(head) == 13:
 				for i in range(len(headers)):
 					if head[i].lower() != headers[i]:
 						errors.append("'%s' is an invalid field or in wrong order, Please rectify." %(head[i]))

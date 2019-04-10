@@ -143,10 +143,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-if DEBUG:
-    STATIC_URL = "/static/"
-else:
-    STATIC_URL = "https://cdn.bmsit.ac.in/bfs/"
+
+STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles/")
 STATICFILES_DIRS = [STATIC_DIR]
 CORPUS_DIR = os.path.join(BASE_DIR, "corpus/")
