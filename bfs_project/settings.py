@@ -119,11 +119,11 @@ AUTH_PASSWORD_VALIDATORS = [
 """
 Email settings
 """
-EMAIL_HOST = "smtp.gmail.com"
-DEFAULT_FROM_EMAIL = "feedbackotp@bmsit.in"
+EMAIL_HOST = "email-smtp.eu-west-1.amazonaws.com"
+DEFAULT_FROM_EMAIL = "feedback@bmsit.ac.in"
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "feedbackotp@bmsit.in"
-EMAIL_HOST_PASSWORD = "Feedback@01"
+EMAIL_HOST_USER = "AKIA5TXBET4HAKGJLMC3"
+EMAIL_HOST_PASSWORD = "BIdSZOxIofpOtLbFv1TOx9Mek/Wyd5MdSalOXu9+CRpA"
 EMAIL_USE_TLS = True
 
 

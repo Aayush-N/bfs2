@@ -143,7 +143,7 @@ class HomeView(FormView):
 			+ "Your OTP for feedback is: "
 			+ random_otp
 			+ "\n\nThanks,\nBFS-BMSIT",
-			"Feedback Support <feedbackotp@bmsit.in>",
+			"Feedback Support <feedback@bmsit.ac.in>",
 			[qs.email],
 		)
 		email.send()
