@@ -23,7 +23,7 @@ class FeedbackForm(models.Model):
     code = models.CharField(
         "Form Code",
         max_length=2,
-        help_text="Mandatory to enter two charachters",
+        help_text="Mandatory to enter two characters",
         null=False,
         blank=False,
     )
