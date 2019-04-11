@@ -121,6 +121,7 @@ class HomeView(FormView):
 			+ ap.urlencode(params)
 		)
 		urllib.request.urlopen(baseUrl).read(1000)
+		OTPTrack.objects.create(phone=phone, usn=usn)
 
 	def password_update(self, random_otp, usn):
 		"""
@@ -128,13 +129,11 @@ class HomeView(FormView):
 		"""
 		hashed_pwd = make_password(random_otp)
 		User.objects.filter(username=usn).update(password=hashed_pwd)
-		print(hashed_pwd)
 
 	def email_otp(self, random_otp, qs):
 		"""
 		Sends OTP to email
 		"""
-		print(random_otp)
 		email = EmailMessage(
 			"Feedback OTP",
 			"Hi, "
@@ -147,6 +146,7 @@ class HomeView(FormView):
 			[qs.email],
 		)
 		email.send()
+		OTPTrack.objects.create(email=qs.email, usn=qs.username)
 
 	def feedback_over_view(self, request):
 		template_name = "feedback_over_final.html"
@@ -156,7 +156,7 @@ class HomeView(FormView):
 		return render(request, self.template_name)
 
 	def post(self, request, *args, **kwargs):
-		random_otp = r"".join(random.choice("01234ABCD") for i in range(8))
+		random_otp = r"".join(random.choice("0123456789") for i in range(4))
 		try:
 			otp_page = "login.html"
 			usn = request.POST.get("usn1")
@@ -166,7 +166,7 @@ class HomeView(FormView):
 
 			# Checks if user is admin and redirects directly
 			if qs.is_superuser:
-				messages.error(request, "Yo admin be so cool!")
+				messages.error(request, "Remember Admin, with great power comes great responsibility.")
 				return HttpResponseRedirect("/login/usn=" + usn)
 
 				# Checks if done=False
