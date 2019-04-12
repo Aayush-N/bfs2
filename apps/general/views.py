@@ -182,7 +182,7 @@ class HomeView(FormView):
 						# Checks if both email and phone exist
 					elif qs.email and qs.phone:
 						self.phone_otp(random_otp, qs.phone, qs.username)
-						self.email_otp(random_otp, qs)
+						#self.email_otp(random_otp, qs)
 						self.password_update(random_otp, usn)
 						messages.error(
 							request, "OTP sent to " + qs.phone + " and " + qs.email
