@@ -852,6 +852,10 @@ def Dashboard(request):
 	user = request.user
 	user_type = user.get_user_type()
 	superuser = user.is_superuser
+	if user.groups.filter(name='feedback_admin').exists():
+		feedback_admin = True
+	else:
+		feedback_admin = False
 	total = (
 		int(
 			User.objects.filter(
@@ -898,6 +902,7 @@ def Dashboard(request):
 	total_p = User.objects.filter(user_type__name="Student").count()
 	total_percent = int(done / total_p * 100)
 	context = {
+		"feedback_admin":feedback_admin,
 		"user_type": user_type[0].name,
 		"username": user.username,
 		"name": user.first_name,
@@ -991,7 +996,6 @@ def Dashboard(request):
 def easy_upload_subject(request):
 	"""
 	"""
-
 	template_name = "easy_upload/subject.html"
 
 	if request.method == 'POST':
@@ -1100,11 +1104,16 @@ def easy_upload_subject(request):
 		}
 		# print(data)
 	else:
-		context = {
+		if request.user.groups.filter(name='feedback_admin').exists():
+			context = {
 		'form': FileUploadForm(),
 		}
+			return render(request, template_name, context)
+		else:
+			return HttpResponseRedirect('/dashboard')
+		
 
-	return render(request, template_name, context)
+	
 
 @login_required
 def easy_upload_teaches(request):
@@ -1271,11 +1280,13 @@ def easy_upload_teaches(request):
 		}
 		# print(data)
 	else:
-		context = {
+		if request.user.groups.filter(name='feedback_admin').exists():
+			context = {
 		'form': FileUploadForm(),
 		}
-
-	return render(request, template_name, context)
+			return render(request, template_name, context)
+		else:
+			return HttpResponseRedirect('/dashboard')
 
 @login_required
 def easy_upload_users(request):
@@ -1562,11 +1573,13 @@ def easy_upload_users(request):
 		}
 		# print(data)
 	else:
-		context = {
+		if request.user.groups.filter(name='feedback_admin').exists():
+			context = {
 		'form': FileUploadForm(),
 		}
-
-	return render(request, template_name, context)
+			return render(request, template_name, context)
+		else:
+			return HttpResponseRedirect('/dashboard')
 
 @login_required
 def easy_upload(request):
@@ -1574,7 +1587,10 @@ def easy_upload(request):
 	"""
 
 	template_name = "easy_upload/home.html"
-	context = {
-	"home":True,
-	}
-	return render(request, template_name, context)
+	if request.user.groups.filter(name='feedback_admin').exists():
+		context = {
+				"home":True,
+		}
+		return render(request, template_name, context)
+	else:
+		return HttpResponseRedirect('/dashboard')

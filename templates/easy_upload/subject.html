@@ -1,4 +1,5 @@
 {% extends "easy_upload/base.html" %}
+{% load static %}
 {% load widget_tweaks %}
 {% block content %}
 
@@ -28,7 +29,7 @@
             </tbody>
           </table>
         </div>
-        <p>Please note that the type field only takes T (Theory), E (Elective), P (project), L(Lab), EL(Elective Lab). If the subject code already exist then the name of the subject and the subject type will be updated. Download <a href="">this csv file</a> for reference.  Contact Admin if you face any problems.</p>
+        <p>Please note that the type field only takes T (Theory), E (Elective), P (project), L(Lab), EL(Elective Lab). If the subject code already exist then the name of the subject and the subject type will be updated. Download <a href="{% static 'csv/subjects.csv' %}" style="color: #CC0166;">this csv file</a> for reference.  Contact Admin if you face any problems.</p>
 
         <div class="line"></div>
 
