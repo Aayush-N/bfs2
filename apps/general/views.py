@@ -1161,7 +1161,7 @@ def easy_upload_teaches(request):
 
 			for teacher in teachers:
 				try:
-					teach = User.objects.get(username=teacher)
+					teach = User.objects.get(id=teacher)
 				except:
 					errors.append("'%s' user does not exist! Please add to continue" %(teacher))
 
@@ -1185,7 +1185,7 @@ def easy_upload_teaches(request):
 			if not errors:
 				for data in csv_data.values:
 					try:
-						teacher = User.objects.get(username=data[0])
+						teacher = User.objects.get(id=data[0])
 						sem = Semester.objects.get(sem=data[2])
 						subject = Subject.objects.get(code=data[1].upper())
 						if data[8] == 'Y':
@@ -1249,7 +1249,7 @@ def easy_upload_teaches(request):
 						if not is_null:
 							sub_batch = data[5].upper()
 
-						teacher = User.objects.get(username=data[0])
+						teacher = User.objects.get(id=data[0])
 						sem = Semester.objects.get(sem=data[2])
 						subject = Subject.objects.get(code=data[1].upper())
 						if data[6].upper() == 'Y':
