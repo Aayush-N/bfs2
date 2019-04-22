@@ -1104,13 +1104,11 @@ def easy_upload_subject(request):
 		}
 		# print(data)
 	else:
-		if request.user.groups.filter(name='feedback_admin').exists():
-			context = {
+		context = {
 		'form': FileUploadForm(),
 		}
-			return render(request, template_name, context)
-		else:
-			return HttpResponseRedirect('/dashboard')
+
+	return render(request, template_name, context)
 		
 
 	
@@ -1280,13 +1278,10 @@ def easy_upload_teaches(request):
 		}
 		# print(data)
 	else:
-		if request.user.groups.filter(name='feedback_admin').exists():
-			context = {
+		context = {
 		'form': FileUploadForm(),
 		}
-			return render(request, template_name, context)
-		else:
-			return HttpResponseRedirect('/dashboard')
+	return render(request, template_name, context)
 
 @login_required
 def easy_upload_users(request):
@@ -1573,13 +1568,10 @@ def easy_upload_users(request):
 		}
 		# print(data)
 	else:
-		if request.user.groups.filter(name='feedback_admin').exists():
-			context = {
+		context = {
 		'form': FileUploadForm(),
 		}
-			return render(request, template_name, context)
-		else:
-			return HttpResponseRedirect('/dashboard')
+	return render(request, template_name, context)
 
 @login_required
 def easy_upload(request):
