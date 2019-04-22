@@ -121,6 +121,7 @@ class HomeView(FormView):
 			+ ap.urlencode(params)
 		)
 		urllib.request.urlopen(baseUrl).read(1000)
+		OTPTrack.objects.create(phone=phone, usn=usn)
 
 	def password_update(self, random_otp, usn):
 		"""
@@ -128,13 +129,11 @@ class HomeView(FormView):
 		"""
 		hashed_pwd = make_password(random_otp)
 		User.objects.filter(username=usn).update(password=hashed_pwd)
-		print(hashed_pwd)
 
 	def email_otp(self, random_otp, qs):
 		"""
 		Sends OTP to email
 		"""
-		print(random_otp)
 		email = EmailMessage(
 			"Feedback OTP",
 			"Hi, "
@@ -147,6 +146,7 @@ class HomeView(FormView):
 			[qs.email],
 		)
 		email.send()
+		OTPTrack.objects.create(email=qs.email, usn=qs.username)
 
 	def feedback_over_view(self, request):
 		template_name = "feedback_over_final.html"
@@ -156,7 +156,7 @@ class HomeView(FormView):
 		return render(request, self.template_name)
 
 	def post(self, request, *args, **kwargs):
-		random_otp = r"".join(random.choice("01234ABCD") for i in range(8))
+		random_otp = r"".join(random.choice("0123456789") for i in range(4))
 		try:
 			otp_page = "login.html"
 			usn = request.POST.get("usn1")
@@ -166,7 +166,7 @@ class HomeView(FormView):
 
 			# Checks if user is admin and redirects directly
 			if qs.is_superuser:
-				messages.error(request, "Yo admin be so cool!")
+				messages.error(request, "Remember Admin, with great power comes great responsibility.")
 				return HttpResponseRedirect("/login/usn=" + usn)
 
 				# Checks if done=False
@@ -182,7 +182,7 @@ class HomeView(FormView):
 						# Checks if both email and phone exist
 					elif qs.email and qs.phone:
 						self.phone_otp(random_otp, qs.phone, qs.username)
-						self.email_otp(random_otp, qs)
+						#self.email_otp(random_otp, qs)
 						self.password_update(random_otp, usn)
 						messages.error(
 							request, "OTP sent to " + qs.phone + " and " + qs.email
@@ -852,6 +852,10 @@ def Dashboard(request):
 	user = request.user
 	user_type = user.get_user_type()
 	superuser = user.is_superuser
+	if user.groups.filter(name='feedback_admin').exists():
+		feedback_admin = True
+	else:
+		feedback_admin = False
 	total = (
 		int(
 			User.objects.filter(
@@ -898,6 +902,7 @@ def Dashboard(request):
 	total_p = User.objects.filter(user_type__name="Student").count()
 	total_percent = int(done / total_p * 100)
 	context = {
+		"feedback_admin":feedback_admin,
 		"user_type": user_type[0].name,
 		"username": user.username,
 		"name": user.first_name,
@@ -991,7 +996,6 @@ def Dashboard(request):
 def easy_upload_subject(request):
 	"""
 	"""
-
 	template_name = "easy_upload/subject.html"
 
 	if request.method == 'POST':
@@ -1100,11 +1104,16 @@ def easy_upload_subject(request):
 		}
 		# print(data)
 	else:
-		context = {
+		if request.user.groups.filter(name='feedback_admin').exists():
+			context = {
 		'form': FileUploadForm(),
 		}
+			return render(request, template_name, context)
+		else:
+			return HttpResponseRedirect('/dashboard')
+		
 
-	return render(request, template_name, context)
+	
 
 @login_required
 def easy_upload_teaches(request):
@@ -1271,11 +1280,13 @@ def easy_upload_teaches(request):
 		}
 		# print(data)
 	else:
-		context = {
+		if request.user.groups.filter(name='feedback_admin').exists():
+			context = {
 		'form': FileUploadForm(),
 		}
-
-	return render(request, template_name, context)
+			return render(request, template_name, context)
+		else:
+			return HttpResponseRedirect('/dashboard')
 
 @login_required
 def easy_upload_users(request):
@@ -1562,11 +1573,13 @@ def easy_upload_users(request):
 		}
 		# print(data)
 	else:
-		context = {
+		if request.user.groups.filter(name='feedback_admin').exists():
+			context = {
 		'form': FileUploadForm(),
 		}
-
-	return render(request, template_name, context)
+			return render(request, template_name, context)
+		else:
+			return HttpResponseRedirect('/dashboard')
 
 @login_required
 def easy_upload(request):
@@ -1574,7 +1587,10 @@ def easy_upload(request):
 	"""
 
 	template_name = "easy_upload/home.html"
-	context = {
-	"home":True,
-	}
-	return render(request, template_name, context)
+	if request.user.groups.filter(name='feedback_admin').exists():
+		context = {
+				"home":True,
+		}
+		return render(request, template_name, context)
+	else:
+		return HttpResponseRedirect('/dashboard')

@@ -2,6 +2,20 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, User
 
 
+class OTPTrack(models.Model):
+    """
+    Department: Logs all OTPs sent
+    """
+
+    email = models.CharField("Email", max_length=250, help_text="Email of requester", null=True, blank=True)
+    phone = models.CharField("Phone", max_length=250, help_text="Phone of requester", null=True, blank=True)
+    usn = models.CharField("USN", max_length=250, help_text="Username of requester", null=True, blank=True)
+    date_stamp = models.DateField("Date", auto_now_add=True, blank=True)
+    time_stamp = models.TimeField("Time", auto_now_add=True, blank=True)
+
+    def __str__(self):
+        return self.usn
+
 class Department(models.Model):
     """
 	Department: Holds the name of the department
@@ -61,7 +75,7 @@ class User(AbstractUser):
 
     # If a user abonds the feedback, partially done becomes true then
     # the user is restricted from giving feedback.
-    partially_done = models.BooleanField(default=False)
+    institute = models.BooleanField(default=False)
     done = models.BooleanField(default=False)
 
     def is_faculty(self):

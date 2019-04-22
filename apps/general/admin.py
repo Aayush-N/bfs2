@@ -23,6 +23,9 @@ class SubjectResource(resources.ModelResource):
 	class Meta:
 		model = Subject
 
+class OTPTrackResource(resources.ModelResource):
+	class Meta:
+		model = OTPTrack
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin, ImportExportModelAdmin):
@@ -84,7 +87,7 @@ class UserAdmin(DjangoUserAdmin, ImportExportModelAdmin):
 				),
 				(("Designation"), {"fields": ("user_type", "ug")}),
 				(("Important dates"), {"fields": ("last_login", "date_joined")}),
-				(("Completion"), {"fields": ("partially_done", "done")}),
+				(("Completion"), {"fields": ("institute", "done")}),
 			)
 		return (
 			(None, {"fields": ("username", "email", "password")}),
@@ -118,7 +121,7 @@ class UserAdmin(DjangoUserAdmin, ImportExportModelAdmin):
 			),
 			(("Designation"), {"fields": ("user_type", "ug")}),
 			(("Important dates"), {"fields": ("last_login", "date_joined")}),
-			(("Completion"), {"fields": ("partially_done", "done")}),
+			(("Completion"), {"fields": ("institute", "done")}),
 		)
 
 
@@ -165,13 +168,18 @@ class TeachesAdmin(ImportExportModelAdmin):
 @admin.register(Subject)
 class SubjectAdmin(ImportExportModelAdmin):
 	list_display = ("name", "code", "theory", "elective", "project")
-
 	search_fields = ("name", "code")
-
 	resource_class = SubjectResource
+
+@admin.register(OTPTrack)
+class SubjectAdmin(ImportExportModelAdmin):
+	list_display = ("usn", "date_stamp", "time_stamp")
+	search_fields = ("usn",)
+	resource_class = OTPTrackResource
 
 
 admin.site.register(Department)
 admin.site.register(Semester)
 admin.site.register(UserType)
 admin.site.register(Message)
+

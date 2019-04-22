@@ -122,8 +122,8 @@ Email settings
 EMAIL_HOST = "email-smtp.eu-west-1.amazonaws.com"
 DEFAULT_FROM_EMAIL = "feedback@bmsit.ac.in"
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "AKIA5TXBET4HAKGJLMC3"
-EMAIL_HOST_PASSWORD = "BIdSZOxIofpOtLbFv1TOx9Mek/Wyd5MdSalOXu9+CRpA"
+EMAIL_HOST_USER = "AKIA5TXBET4HPKVUIEON"
+EMAIL_HOST_PASSWORD = "BKh15HHKyORzEf8/hprgdpZu2bPEogBtzksoZA82mixQ"
 EMAIL_USE_TLS = True
 
 
@@ -144,7 +144,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 
-STATIC_URL = "/static/"
+STATIC_URL = "/staticfiles/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles/")
 STATICFILES_DIRS = [STATIC_DIR]
 CORPUS_DIR = os.path.join(BASE_DIR, "corpus/")

@@ -1,5 +1,6 @@
 {% extends "easy_upload/base.html" %}
 {% load widget_tweaks %}
+{% load static %}
 {% block content %}
 
         <h2>Upload Users</h2>
@@ -58,7 +59,7 @@
             </tbody>
           </table>
         </div>
-        <p>Please note that the is_active is 'Y' otherwise the student won't be able to give feedback. Also note that the is_active field and ug fields take only 'Y' (yes) and 'N' (No) as inputs. Download <a href="">this csv file</a> for reference. Contact Admin if you face any problems.</p>
+        <p>Please note that the is_active is 'Y' otherwise the student won't be able to give feedback. Also note that the is_active field and ug fields take only 'Y' (yes) and 'N' (No) as inputs. Download <a href="{% static 'csv/users.csv' %}" style="color: #CC0166;">this csv file</a> for reference. Contact Admin if you face any problems.</p>
 
         <div class="line"></div>
 
@@ -73,7 +74,7 @@
               </ul>
             </div>
           {% endif %}
-          <form class="form-group" action="/easy_upload/users" method="post" enctype="multipart/form-data">
+          <form class="form-group" action="/easy-upload/users" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row text-center">
               <div class="upload-btn-wrapper m-1 col-lg-12">
