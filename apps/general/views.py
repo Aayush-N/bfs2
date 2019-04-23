@@ -1300,7 +1300,7 @@ def easy_upload_users(request):
 
 		try:
 			csv_data = pd.read_csv(request.FILES['file'])
-			print(csv_data)
+			# print(csv_data)
 
 			count = 0
 			head = list(csv_data.columns.values)
@@ -1317,7 +1317,7 @@ def easy_upload_users(request):
 			# Check for null values
 			frames = [csv_data.iloc[:,:2], csv_data.iloc[:,3:4], csv_data.iloc[:,5:8], csv_data.iloc[:,12:13]]
 			nullvalues = pd.concat(frames, axis=1, sort=False)
-			print(nullvalues)
+			# print(nullvalues)
 			if nullvalues.isnull().values.any():
 				errors.append("Your CSV Contains null value(s) please rectify!")
 
@@ -1440,7 +1440,9 @@ def easy_upload_users(request):
 						else:
 							done = False
 
+						# print("Entered 1")
 						user = User.objects.get(username=username)
+						# print("Entered 2")
 						user.password=password
 						user.first_name=first_name
 						user.email = email
