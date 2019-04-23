@@ -1624,3 +1624,47 @@ def easy_upload_test(request):
 		return render(request, template_name, context)
 	else:
 		return HttpResponseRedirect('/dashboard')
+
+# @login_required
+# def easy_upload_sms_students(request):
+# 	"""
+# 	"""
+
+# 	template_name = "easy_upload/sms_students.html"
+
+# 	if request.method == 'POST':
+
+# 		errors = []
+# 		headers = ["phone"]
+
+# 		try:
+# 			data = 
+# 			# print(csv_data)
+
+# 			count = 0
+# 			head = list(csv_data.columns.values)
+
+# 			# Check if all the Headers are there
+# 			if len(head) == 13:
+# 				for i in range(len(headers)):
+# 					if head[i].lower() != headers[i]:
+# 						errors.append("'%s' is an invalid field or in wrong order, Please rectify." %(head[i]))
+# 			else:
+# 				errors.append("Invalid number of columns provided!")
+
+# 			if csv_data.isnull().values.any():
+# 					errors.append("Your CSV Contains null value(s) please rectify!")
+
+# 			if not errors:
+			
+
+# 			phone1 = phone
+# 			message = "Please login with the OTP: " + random_otp + " for USN:" + usn
+# 			params = {"number": phone1, "text": message}
+# 			baseUrl = (
+# 				"https://www.smsgatewayhub.com/api/mt/SendSMS?APIKey=62sxGWT6MkCjDul6eNKejw&senderid=BMSITM&channel=2&DCS=0&flashsms=0&"
+# 				+ ap.urlencode(params)
+# 			)
+# 			urllib.request.urlopen(baseUrl).read(1000)
+# 		except Exception as e:
+# 			pass
