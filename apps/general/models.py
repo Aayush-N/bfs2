@@ -113,7 +113,7 @@ class Subject(models.Model):
 	Subject: Holds details about each subject
 	"""
 
-    name = models.CharField("Subject Name", max_length=50)
+    name = models.CharField("Subject Name", max_length=100)
     code = models.CharField("Subject Code", max_length=50)
 
     theory = models.BooleanField(default=True)
