@@ -1,0 +1,60 @@
+{% extends "easy_upload/base.html" %}
+{% load static %}
+{% block content %}
+
+<h2>Upload summary for {{request.user.department}} department</h2>
+
+<div class="justify-content-center text-center">
+
+  {% for sem, section in data.items %}
+    <h3 class="text-center my-3" style="color: #cc2c91;">Semester {{sem}}</h3>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <td>SECTION</td>
+            <td>BATCH</td>
+            <td>SUB BATCH</td>
+            <td>TEACHER</td>
+            <td>SUBJECT</td>
+            <td>UG/PG</td>
+            <td>COUNT</td>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sec, teacher in section.items %}
+            {% for teach in teacher %}
+              <tr valign="middle">
+                {% if forloop.counter == 1 %}
+                  <td rowspan="{{teacher|length}}">{{sec}}</td>
+                {% endif %}
+                {% if teach.batch %}
+                  <td>{{teach.batch}}</td>
+                {% else %}
+                  <td>-</td>
+                {% endif %}
+                {% if teach.sub_batch %}
+                  <td>{{teach.sub_batch}}</td>
+                {% else %}
+                  <td>-</td>
+                {% endif %}
+                <td>{{teach.teacher.first_name}}</td>
+                <td>{{teach.subject.name}}</td>
+                {% if teach.ug %}
+                  <td>UG</td>
+                {% else %}
+                  <td>PG</td>
+                {% endif %}
+                <td>{{teach.count}}</td>
+              </tr>
+            {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="line"></div>
+  {% endfor %}
+
+</div>
+
+{% endblock %}

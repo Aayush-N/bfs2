@@ -1370,7 +1370,7 @@ def easy_upload_users(request):
 				for data in csv_data.values:
 					try:
 						password = make_password(id_generator(8, "6793YUIO"))
-						username = data[0].upper()
+						username = data[0].strip().upper()
 						first_name = data[1].title()
 						try:
 							email = data[2].lower()
@@ -1440,9 +1440,10 @@ def easy_upload_users(request):
 						else:
 							done = False
 
-						# print("Entered 1")
+						print("Entered 1")
 						user = User.objects.get(username=username)
-						# print("Entered 2")
+						print(user.first_name)
+						print("Entered 2")
 						user.password=password
 						user.first_name=first_name
 						user.email = email
@@ -1456,6 +1457,7 @@ def easy_upload_users(request):
 						user.batch = batch
 						user.sub_batch = sub_batch
 						user.done = done
+						
 
 						# Check for number of elective
 						electives = []
@@ -1466,7 +1468,9 @@ def easy_upload_users(request):
 						if elective_2:
 							electives.append(Subject.objects.get(code=elective_2))
 
+						# print("2--------------")
 						user.elective.add(*electives)
+						# print("3--------------")
 						user.save()
 						updated.append(data)
 
@@ -1542,6 +1546,7 @@ def easy_upload_users(request):
 						else:
 							done = False
 
+						# print("Entered 3", username)
 						user_obj = User.objects.create(username=username, password=password, first_name=first_name, email=email, is_active=is_active, phone=phone, sem=str(sem), sec=sec, department=department, ug=ug, batch=batch, sub_batch=sub_batch, done=done)
 
 						user_obj.user_type.add(user_type)
@@ -1584,6 +1589,37 @@ def easy_upload(request):
 	if request.user.groups.filter(name='feedback_admin').exists():
 		context = {
 				"home":True,
+		}
+		return render(request, template_name, context)
+	else:
+		return HttpResponseRedirect('/dashboard')
+
+@login_required
+def easy_upload_test(request):
+	"""
+	"""
+
+	template_name = "easy_upload/test.html"
+	if request.user.groups.filter(name='feedback_admin').exists():
+
+		dept = request.user.department
+
+		semester = Teaches.objects.filter(department=dept).order_by('sem').values('sem').distinct()
+		section = Teaches.objects.filter(department=dept).order_by('sec').values('sec').distinct()
+		data = {}
+
+		for sem in semester:
+
+			for sec in section:
+				if Teaches.objects.filter(department=dept, sem=sem['sem'], sec=sec['sec']).exists():
+					if sem['sem'] in data:
+						data[sem['sem']][sec['sec']] = Teaches.objects.filter(department=dept, sem=sem['sem'], sec=sec['sec'])
+					else:
+						data[sem['sem']] = {sec['sec']:Teaches.objects.filter(department=dept, sem=sem['sem'], sec=sec['sec']),}
+
+		context = {
+				"test":True,
+				"data":data,
 		}
 		return render(request, template_name, context)
 	else:

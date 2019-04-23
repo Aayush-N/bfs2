@@ -138,6 +138,7 @@ class TeachesAdmin(ImportExportModelAdmin):
 		"ug",
 	)
 	search_fields = ("teacher__first_name", "subject__name", "subject__code")
+	list_filter = ('sec', 'sem', 'department')
 
 	resource_class = TeachesResource
 

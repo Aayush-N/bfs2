@@ -12,14 +12,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameField(
-            model_name='teaches',
-            old_name='active',
-            new_name='is_active',
-        ),
         migrations.AlterField(
             model_name='subject',
             name='name',
-            field=models.CharField(max_length=100, verbose_name='Subject Name'),
+            field=models.CharField(max_length=256, verbose_name='Subject Name'),
         ),
     ]

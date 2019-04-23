@@ -31,5 +31,6 @@ urlpatterns = [
     url(r"^easy-upload/subject", views.easy_upload_subject, name="easy_upload_subject"),
     url(r"^easy-upload/teaches", views.easy_upload_teaches, name="easy_upload_teaches"),
     url(r"^easy-upload/users", views.easy_upload_users, name="easy_upload_users"),
+    url(r"^easy-upload/summary", views.easy_upload_test, name="easy_upload_test"),
     # url(r'^consolidated/', views.consolidated.as_view(), name='feedback/consolidated_report'),
 ]

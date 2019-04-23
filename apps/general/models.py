@@ -21,7 +21,13 @@ class Department(models.Model):
 	Department: Holds the name of the department
 	"""
 
+    DEPT = (
+        ('teaching', 'teaching'),
+        ('non-teaching', 'non-teaching'),
+        )
+
     name = models.CharField("Name", max_length=250, help_text="Name of the department")
+    d_type = models.CharField(choices=DEPT, default='teaching', max_length=15)
 
     def __str__(self):
         return self.name
@@ -59,6 +65,7 @@ class User(AbstractUser):
 	We are considering the Institution as a user.
 	"""
 
+    first_name = models.CharField("First Name", max_length=100, null=True, blank=True)
     phone = models.CharField("Phone", max_length=15, null=True, blank=True)
     sem = models.IntegerField("Semester", null=True, blank=True)
     sec = models.CharField("Section", max_length=10, null=True, blank=True)
@@ -152,7 +159,7 @@ class Teaches(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.teacher.first_name + " -> " + self.subject.name
+        return self.teacher.first_name + " -> " + self.subject.name + " ("+str(self.sem.sem) + " " + str(self.sec) + ")"
 
 
 class Message(models.Model):
