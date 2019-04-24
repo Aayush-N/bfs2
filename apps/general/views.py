@@ -1009,6 +1009,9 @@ def easy_upload_subject(request):
 		try:
 			csv_data = pd.read_csv(request.FILES['file'])
 
+			csv_data = csv_data.apply(lambda x: x.str.encode('ascii', 'ignore').str.decode('utf-8').str.strip() if x.dtype == "object" else x)
+			# print(csv_data)
+
 			count = 0
 			head = list(csv_data.columns.values)
 
@@ -1130,6 +1133,7 @@ def easy_upload_teaches(request):
 
 		try:
 			csv_data = pd.read_csv(request.FILES['file'])
+			csv_data = csv_data.apply(lambda x: x.str.encode('ascii', 'ignore').str.decode('utf-8').str.strip() if x.dtype == "object" else x)
 
 			count = 0
 			head = list(csv_data.columns.values)
@@ -1300,6 +1304,9 @@ def easy_upload_users(request):
 
 		try:
 			csv_data = pd.read_csv(request.FILES['file'])
+			csv_data = csv_data.apply(lambda x: x.str.encode('ascii', 'ignore').str.decode('utf-8').str.strip() if x.dtype == "object" else x)
+
+			# print(csv_data)
 			# print(csv_data)
 
 			count = 0
@@ -1440,10 +1447,10 @@ def easy_upload_users(request):
 						else:
 							done = False
 
-						print("Entered 1")
+						# print("Entered 1")
 						user = User.objects.get(username=username)
 						print(user.first_name)
-						print("Entered 2")
+						# print("Entered 2") 
 						user.password=password
 						user.first_name=first_name
 						user.email = email

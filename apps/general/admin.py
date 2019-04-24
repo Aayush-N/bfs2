@@ -38,6 +38,8 @@ class UserAdmin(DjangoUserAdmin, ImportExportModelAdmin):
 	search_fields = ("email", "first_name", "last_name", "username", "phone")
 	ordering = ("username",)
 
+	list_filter = ('sem', 'sec', 'department', 'elective', 'batch', 'sub_batch')
+
 	resource_class = UserResource
 
 	def save_model(self, request, obj, form, change):
