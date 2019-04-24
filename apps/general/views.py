@@ -120,7 +120,7 @@ class HomeView(FormView):
 			"https://www.smsgatewayhub.com/api/mt/SendSMS?APIKey=62sxGWT6MkCjDul6eNKejw&senderid=BMSITM&channel=2&DCS=0&flashsms=0&"
 			+ ap.urlencode(params)
 		)
-		urllib.request.urlopen(baseUrl).read(1000)
+		#urllib.request.urlopen(baseUrl).read(1000)
 		OTPTrack.objects.create(phone=phone, usn=usn)
 
 	def password_update(self, random_otp, usn):
@@ -145,7 +145,7 @@ class HomeView(FormView):
 			"Feedback Support <feedback@bmsit.ac.in>",
 			[qs.email],
 		)
-		email.send()
+		#email.send()
 		OTPTrack.objects.create(email=qs.email, usn=qs.username)
 
 	def feedback_over_view(self, request):
@@ -185,7 +185,8 @@ class HomeView(FormView):
 						#self.email_otp(random_otp, qs)
 						self.password_update(random_otp, usn)
 						messages.error(
-							request, "OTP sent to " + qs.phone + " and " + qs.email
+							#request, "OTP sent to " + qs.phone + " and " + qs.email
+							request, "The OTP is \n" + random_otp
 						)
 						return HttpResponseRedirect("/login/usn=" + usn)
 

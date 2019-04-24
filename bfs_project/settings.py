@@ -14,7 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_DIR = os.path.join(BASE_DIR, "static/")
+STATIC_DIR = os.path.join(BASE_DIR, "static")
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 MEDIA_DIR = os.path.join(BASE_DIR, "media")
 
@@ -122,8 +122,8 @@ Email settings
 EMAIL_HOST = "email-smtp.eu-west-1.amazonaws.com"
 DEFAULT_FROM_EMAIL = "feedback@bmsit.ac.in"
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "AKIA5TXBET4HPKVUIEON"
-EMAIL_HOST_PASSWORD = "BKh15HHKyORzEf8/hprgdpZu2bPEogBtzksoZA82mixQ"
+EMAIL_HOST_USER = "AKIA5TXBET4HAKGJLMC3"
+EMAIL_HOST_PASSWORD = "BIdSZOxIofpOtLbFv1TOx9Mek/Wyd5MdSalOXu9+CRpA"
 EMAIL_USE_TLS = True
 
 
@@ -143,8 +143,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-
-STATIC_URL = "/staticfiles/"
+if DEBUG:
+    STATIC_URL = "/static/"
+else:
+    STATIC_URL = "https://cdn.bmsit.ac.in/bfs/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles/")
 STATICFILES_DIRS = [STATIC_DIR]
 CORPUS_DIR = os.path.join(BASE_DIR, "corpus/")
