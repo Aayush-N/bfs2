@@ -38,7 +38,7 @@ class UserAdmin(DjangoUserAdmin, ImportExportModelAdmin):
 		(None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),
 	)
 
-	list_display = ("username", "first_name", "electives", "phone", "sem", "sec")
+	list_display = ("username", "first_name", "electives", "phone", "sem", "sec", "batch", "sub_batch", "done")
 	search_fields = ("email", "first_name", "last_name", "username", "phone")
 	ordering = ("username",)
 

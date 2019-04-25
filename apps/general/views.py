@@ -1708,7 +1708,7 @@ def easy_upload_message(request):
 							"https://www.smsgatewayhub.com/api/mt/SendSMS?APIKey=62sxGWT6MkCjDul6eNKejw&senderid=BMSITM&channel=2&DCS=0&flashsms=0&"
 							+ ap.urlencode(params)
 						)
-						# urllib.request.urlopen(baseUrl).read(1000)
+						urllib.request.urlopen(baseUrl).read(1000)
 						count += 1
 					else:
 						n_count += 1
