@@ -159,7 +159,7 @@ class HomeView(FormView):
 		elif qs.department.name == 'TCE':
 			fromaddr = "feedbacktceotp@bmsit.in"
 		elif qs.department.name == 'MCA':
-			fromaddr = "feedbackmcaotp@bmsit.in"
+			fromaddr = "feedbackeceotp@bmsit.in"
 		else:
 			email = EmailMessage(
 				"Feedback OTP",
