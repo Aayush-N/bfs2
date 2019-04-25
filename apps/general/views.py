@@ -151,7 +151,7 @@ class HomeView(FormView):
 		elif qs.department.name == 'ISE':
 			fromaddr = "feedbackiseotp@bmsit.in"
 		elif qs.department.name == 'CIVIL':
-			fromaddr = "feedbackcivilotp@bmsit.in"
+			fromaddr = "feedbackcseotp@bmsit.in"
 		elif qs.department.name == 'EEE':
 			fromaddr = "feedbackeeeotp@bmsit.in"
 		elif qs.department.name == 'MECH':
