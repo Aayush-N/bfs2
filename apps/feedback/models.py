@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 import datetime
+from datetime import date
 
 
 class FeedbackForm(models.Model):
@@ -144,3 +145,18 @@ class StudentConsolidatedReport(models.Model):
 
     def __str__(self):
         return self.name + " | "+self.teacher.subject.name + " [" + str(self.count) + "]"
+
+def current_years():
+    return date.today().year
+
+class FeedbackProcess(models.Model):
+    """
+    """
+
+    current_year = current_years()
+
+    title = models.CharField("Feedback Title", max_length=250)
+    year = models.IntegerField("Year", default=current_year)
+
+    def __str__(self):
+        return self.title

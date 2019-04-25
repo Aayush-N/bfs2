@@ -222,6 +222,7 @@ class FeedbackView(FormView):
         formset = AnswerFormset(request.POST)
         form_valid = form.is_valid()
         formset_valid = formset.is_valid()
+
         if self.request.user.is_student():
             StudentAnswerFormset = modelformset_factory(
                 StudentAnswer, form=StudentFeedbackAnswerForm
@@ -253,13 +254,14 @@ class FeedbackView(FormView):
                             feedback_form = FeedbackForm.objects.get(code="ST")
                             question = feedback_form.question.all()
                             for form, que in zip(formset, question):
-                                ans = form.cleaned_data.get("answer")
-                                answer = StudentAnswer.objects.create(
-                                    question=que,
-                                    value=ans,
-                                    teacher=teaches,
-                                    form=feedback_form,
-                                )
+                                if not self.request.user.department.test_mode:
+                                    ans = form.cleaned_data.get("answer")
+                                    answer = StudentAnswer.objects.create(
+                                        question=que,
+                                        value=ans,
+                                        teacher=teaches,
+                                        form=feedback_form,
+                                    )
                             del self.request.session["post_recipients_theory"][0]
                             self.request.session[
                                 "post_recipients_theory"
@@ -271,13 +273,14 @@ class FeedbackView(FormView):
                             feedback_form = FeedbackForm.objects.get(code="SL")
                             question = feedback_form.question.all()
                             for form, que in zip(formset, question):
-                                ans = form.cleaned_data.get("answer")
-                                answer = StudentAnswer.objects.create(
-                                    question=que,
-                                    value=ans,
-                                    teacher=teaches,
-                                    form=feedback_form,
-                                )
+                                if not self.request.user.department.test_mode:
+                                    ans = form.cleaned_data.get("answer")
+                                    answer = StudentAnswer.objects.create(
+                                        question=que,
+                                        value=ans,
+                                        teacher=teaches,
+                                        form=feedback_form,
+                                    )
                             del self.request.session["post_recipients_labs"][0]
                             self.request.session[
                                 "post_recipients_labs"
@@ -289,13 +292,14 @@ class FeedbackView(FormView):
                             feedback_form = FeedbackForm.objects.get(code="SP")
                             question = feedback_form.question.all()
                             for form, que in zip(formset, question):
-                                ans = form.cleaned_data.get("answer")
-                                answer = StudentAnswer.objects.create(
-                                    question=que,
-                                    value=ans,
-                                    teacher=teaches,
-                                    form=feedback_form,
-                                )
+                                if not self.request.user.department.test_mode:
+                                    ans = form.cleaned_data.get("answer")
+                                    answer = StudentAnswer.objects.create(
+                                        question=que,
+                                        value=ans,
+                                        teacher=teaches,
+                                        form=feedback_form,
+                                    )
                             del self.request.session["post_recipients_project"][0]
                             self.request.session[
                                 "post_recipients_project"
@@ -305,13 +309,14 @@ class FeedbackView(FormView):
                         feedback_form = iterable_forms[0]
                         question_count = feedback_form.question.all().count()
                         for form, que in zip(formset, feedback_form.question.all()):
-                            ans = form.cleaned_data.get("answer")
-                            answer = StudentAnswer.objects.create(
-                                question=que,
-                                value=ans,
-                                recipient=self.get_user(feedback_form.recipient),
-                                form=feedback_form,
-                            )
+                            if not self.request.user.department.test_mode:
+                                ans = form.cleaned_data.get("answer")
+                                answer = StudentAnswer.objects.create(
+                                    question=que,
+                                    value=ans,
+                                    recipient=self.get_user(feedback_form.recipient),
+                                    form=feedback_form,
+                                )
                             # remove the forms once done
                         del self.request.session["form"][0]
                         self.request.session["form"] = self.request.session["form"]
@@ -320,8 +325,9 @@ class FeedbackView(FormView):
             if request.session["count"]:
                 return HttpResponseRedirect(reverse_lazy("feedback_form"))
             else:
-                self.request.user.done = True
-                self.request.user.save()
+                if not self.request.user.department.test_mode:
+                    self.request.user.done = True
+                    self.request.user.save()
                 return HttpResponseRedirect(reverse_lazy("logout"))
 
         count = self.request.session["count"]
@@ -342,24 +348,26 @@ class FeedbackView(FormView):
                         feedback_form = FeedbackForm.objects.get(code="HH")
                         question = feedback_form.question.all()
                         for form, que in zip(formset, question):
-                            ans = form.cleaned_data.get("answer")
-                            answer = Answer.objects.create(
-                                question=que,
-                                value=ans,
-                                recipient=recipient,
-                                form=feedback_form,
-                            )
+                            if not self.request.user.department.test_mode:
+                                ans = form.cleaned_data.get("answer")
+                                answer = Answer.objects.create(
+                                    question=que,
+                                    value=ans,
+                                    recipient=recipient,
+                                    form=feedback_form,
+                                )
                     elif self.request.user.is_faculty():
                         feedback_form = FeedbackForm.objects.get(code="FF")
                         question = feedback_form.question.all()
                         for form, que in zip(formset, question):
-                            ans = form.cleaned_data.get("answer")
-                            answer = Answer.objects.create(
-                                question=que,
-                                value=ans,
-                                recipient=recipient,
-                                form=feedback_form,
-                            )
+                            if not self.request.user.department.test_mode:
+                                ans = form.cleaned_data.get("answer")
+                                answer = Answer.objects.create(
+                                    question=que,
+                                    value=ans,
+                                    recipient=recipient,
+                                    form=feedback_form,
+                                )
 
                     del self.request.session["post_recipients"][0]
                     self.request.session["post_recipients"] = self.request.session[
@@ -370,13 +378,14 @@ class FeedbackView(FormView):
                     feedback_form = iterable_forms[0]
                     question_count = feedback_form.question.all().count()
                     for form, que in zip(formset, feedback_form.question.all()):
-                        ans = form.cleaned_data.get("answer")
-                        answer = Answer.objects.create(
-                            question=que,
-                            value=ans,
-                            recipient=self.get_user(feedback_form.recipient),
-                            form=feedback_form,
-                        )
+                        if not self.request.user.department.test_mode:
+                            ans = form.cleaned_data.get("answer")
+                            answer = Answer.objects.create(
+                                question=que,
+                                value=ans,
+                                recipient=self.get_user(feedback_form.recipient),
+                                form=feedback_form,
+                            )
 
                         # remove the forms once done
                     del self.request.session["form"][0]

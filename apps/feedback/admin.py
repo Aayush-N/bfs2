@@ -4,14 +4,20 @@ from import_export import resources
 
 from .models import *
 
-admin.site.register(FeedbackForm)
-admin.site.register(Question)
 admin.site.register(ConsolidatedReport)
 
 
 class StudentConsolidatedResource(resources.ModelResource):
     class Meta:
         model = StudentConsolidatedReport
+
+class FeedbackFormResource(resources.ModelResource):
+    class Meta:
+        model = FeedbackForm
+
+class QuestionResource(resources.ModelResource):
+    class Meta:
+        model = Question
 
 
 @admin.register(Answer)
@@ -37,3 +43,12 @@ class StudentConsolidatedAdmin(ImportExportModelAdmin):
 
     def __str__(self):
     	return self.name + self.count
+
+@admin.register(FeedbackForm)
+class FeedbackFormAdmin(ImportExportModelAdmin):
+    resource_class = FeedbackFormResource
+
+
+@admin.register(Question)
+class QuestionAdmin(ImportExportModelAdmin):
+    resource_class = QuestionResource

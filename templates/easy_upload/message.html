@@ -1,0 +1,64 @@
+{% extends "easy_upload/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+
+        <h2>Send Message</h2>
+        <p>The messages will only be sent to your respective department. Make sure your data is correct and the system is working properly before sending the message. Please make sure you only give the body of the message, please don't include dear students, regards etc. it's already been included. Messages will be sent to only those students who haven't completed their feedback yet (Those students whose done=False).</p>
+
+        <div class="line"></div>
+
+        {% if not request.user.department.test_mode %}
+          <div>
+            {% if errors %}
+              <div>
+                <h5><i class="fas fa-exclamation-circle"></i> Please correct these errors before proceeding</h5>
+                <ul class="errors">
+                  {% for error in errors %}
+                    <li class=""><i class="fas fa-exclamation"></i> {{error}}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+            <form class="form-group" action="/easy-upload/message" method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-lg-12">
+                  <p>Dear [student_name],</p>
+                  <p></p>
+                </div>
+                <div class="m-1 col-lg-12">
+                  {% render_field form.message_text required="required" class="from-control" style="border-radius: 5px;" placeholder="Enter your message here..."%}
+                </div>
+                <div class="col-lg-12">
+                  <p>
+                  <p>your usn: [USN],</p>
+                  <p>Regards,</p>
+                  <p>HoD {{request.user.department}}</p>
+                </div>
+                <div class="col-lg-12">
+                  <input type="submit" class="btn m-1" value="submit">
+                </div>
+              </div>
+            </form>
+            {% if updated %}
+              <div>
+                <h5><i class="fas fa-exclamation-circle"></i>Updates:</h5>
+                <ul class="message">
+                  {% for var in updated %}
+                    <li class=""><i class="fas fa-exclamation"></i> {{var}}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+          </div>
+        {% else %}
+          <div>
+            <h1 style="color: red;">You can't send messages when the Test-mode is on!</h1>
+            <p>You can turn the test-mode off by changing it in <a href="">settings</a>.</p>
+          </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

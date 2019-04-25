@@ -56,6 +56,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 
+from smtplib import SMTP_SSL as SMTP
+
 
 # Send email, text message
 import psycopg2
@@ -134,19 +136,54 @@ class HomeView(FormView):
 		"""
 		Sends OTP to email
 		"""
-		email = EmailMessage(
-			"Feedback OTP",
-			"Hi, "
-			+ qs.first_name
-			+ "\n\n"
-			+ "Your OTP for feedback is: "
-			+ random_otp
-			+ "\n\nThanks,\nBFS-BMSIT",
-			"Feedback Support <feedback@bmsit.ac.in>",
-			[qs.email],
-		)
-		#email.send()
-		OTPTrack.objects.create(email=qs.email, usn=qs.username)
+
+		body = "Hi, "\
+			+ qs.first_name\
+			+ "\n\n"\
+			+ "Your OTP for feedback is: "\
+			+ random_otp\
+			+ "\n\nThanks,\nBFS-BMSIT"
+
+		if qs.department.name == 'CSE':
+			fromaddr = "feedbackcseotp@bmsit.in"
+		elif qs.department.name == 'ECE':
+			fromaddr = "feedbackeceotp@bmsit.in"
+		elif qs.department.name == 'ISE':
+			fromaddr = "feedbackiseotp@bmsit.in"
+		elif qs.department.name == 'CIVIL':
+			fromaddr = "feedbackcivilotp@bmsit.in"
+		elif qs.department.name == 'EEE':
+			fromaddr = "feedbackeeeotp@bmsit.in"
+		elif qs.department.name == 'MECH':
+			fromaddr = "feedbackmechotp@bmsit.in"
+		elif qs.department.name == 'TCE':
+			fromaddr = "feedbacktceotp@bmsit.in"
+		elif qs.department.name == 'MCA':
+			fromaddr = "feedbackmcaotp@bmsit.in"
+		else:
+			email = EmailMessage(
+				"Feedback OTP",
+				"Hi, "
+				+ qs.first_name
+				+ "\n\n"
+				+ "Your OTP for feedback is: "
+				+ random_otp
+				+ "\n\nThanks,\nBFS-BMSIT",
+				"Feedback Support <feedback@bmsit.ac.in>",
+				[qs.email],
+			)
+			#email.send()
+			OTPTrack.objects.create(email=qs.email, usn=qs.username)
+			return
+
+		msg = MIMEText(body, 'plain')
+		msg['To'] = qs.email
+		msg['Subject'] = "Feedback OTP"
+
+		server = SMTP('smtp.gmail.com')
+		server.login(fromaddr, "Feedback@01")
+		server.sendmail(fromaddr, qs.email, msg.as_string())
+		server.quit()
 
 	def feedback_over_view(self, request):
 		template_name = "feedback_over_final.html"
@@ -174,19 +211,27 @@ class HomeView(FormView):
 
 				if qs:
 					# Checks if both email and phone doesn't exist
-					if not qs.email and not qs.phone:
+					if qs.department.test_mode:
+						self.password_update(random_otp, usn)
+						messages.error(
+							request, "The OTP is \n" + random_otp
+							)
+						return HttpResponseRedirect("/login/usn=" + usn)
+
+					elif not qs.email and not qs.phone:
 						messages.error(
 							request, "Contact details incomplete. Contact coordinator"
 						)
 
-						# Checks if both email and phone exist
+					# Checks if both email and phone exist
 					elif qs.email and qs.phone:
 						self.phone_otp(random_otp, qs.phone, qs.username)
-						#self.email_otp(random_otp, qs)
+						self.email_otp(random_otp, qs)
 						self.password_update(random_otp, usn)
+						# print("OTP: ", random_otp)
 						messages.error(
-							#request, "OTP sent to " + qs.phone + " and " + qs.email
-							request, "The OTP is \n" + random_otp
+							request, "OTP sent to " + qs.phone + " and " + qs.email
+							# request, "The OTP is \n" + random_otp
 						)
 						return HttpResponseRedirect("/login/usn=" + usn)
 
@@ -1633,46 +1678,96 @@ def easy_upload_test(request):
 	else:
 		return HttpResponseRedirect('/dashboard')
 
-# @login_required
-# def easy_upload_sms_students(request):
-# 	"""
-# 	"""
+@login_required
+def easy_upload_message(request):
+	"""
+	"""
 
-# 	template_name = "easy_upload/sms_students.html"
+	template_name = "easy_upload/message.html"
 
-# 	if request.method == 'POST':
+	if request.method == 'POST':
 
-# 		errors = []
-# 		headers = ["phone"]
+		errors = []
+		updated = []
+		form = MessageForm(request.POST)
+		count, n_count = 0, 0
+		if form.is_valid():
+			text = form.cleaned_data['message_text']
 
-# 		try:
-# 			data = 
-# 			# print(csv_data)
+		try:
+			user_data = User.objects.filter(department=request.user.department, done=False, is_active=True)
 
-# 			count = 0
-# 			head = list(csv_data.columns.values)
+			for data in user_data:
+				try:
+					if data.phone:
+						phone1 = data.phone
+						message = "Dear %s,\n\n%s\n\nyour USN: %s\nregards,\nHoD %s" %(data.first_name, text, data.username, data.department)
+						print(message)
+						params = {"number": phone1, "text": message}
+						baseUrl = (
+							"https://www.smsgatewayhub.com/api/mt/SendSMS?APIKey=62sxGWT6MkCjDul6eNKejw&senderid=BMSITM&channel=2&DCS=0&flashsms=0&"
+							+ ap.urlencode(params)
+						)
+						# urllib.request.urlopen(baseUrl).read(1000)
+						count += 1
+					else:
+						n_count += 1
+				except Exception as e:
+					errors.append("couldn't send message to %s. cause: %s" %(data.username, e))
 
-# 			# Check if all the Headers are there
-# 			if len(head) == 13:
-# 				for i in range(len(headers)):
-# 					if head[i].lower() != headers[i]:
-# 						errors.append("'%s' is an invalid field or in wrong order, Please rectify." %(head[i]))
-# 			else:
-# 				errors.append("Invalid number of columns provided!")
+			updated.append("Message sent to %d students." %(count))
+			updated.append("Could not send message to %d students." %(n_count))
 
-# 			if csv_data.isnull().values.any():
-# 					errors.append("Your CSV Contains null value(s) please rectify!")
+			context = {
+				"errors":errors,
+				"updated":updated,
+				"message":True,
+				'form': MessageForm(),
+			}
 
-# 			if not errors:
-			
+			message = form.save(commit=False)
+			message.sent_by = request.user
 
-# 			phone1 = phone
-# 			message = "Please login with the OTP: " + random_otp + " for USN:" + usn
-# 			params = {"number": phone1, "text": message}
-# 			baseUrl = (
-# 				"https://www.smsgatewayhub.com/api/mt/SendSMS?APIKey=62sxGWT6MkCjDul6eNKejw&senderid=BMSITM&channel=2&DCS=0&flashsms=0&"
-# 				+ ap.urlencode(params)
-# 			)
-# 			urllib.request.urlopen(baseUrl).read(1000)
-# 		except Exception as e:
-# 			pass
+			message.save()
+
+
+		except Exception as e:
+			errors.append("Exception, cause: %s" %(e) )
+	else:
+		context = {
+		'form': MessageForm(),
+		}
+	return render(request, template_name, context)
+
+@login_required
+def test_mode(request):
+	"""
+	"""
+	if request.user.groups.filter(name='feedback_admin').exists():
+		department = Department.objects.get(id=request.user.department.id)
+
+		if department.test_mode:
+			department.test_mode=False
+			department.save()
+		else:
+			department.test_mode=True
+			department.save()
+
+		return HttpResponseRedirect('/easy-upload/settings')
+
+	else:
+		return HttpResponseRedirect('/dashboard')
+
+@login_required
+def easy_upload_settings(request):
+	"""
+	"""
+
+	template_name = "easy_upload/settings.html"
+	if request.user.groups.filter(name='feedback_admin').exists():
+		context = {
+				"settings":True,
+		}
+		return render(request, template_name, context)
+	else:
+		return HttpResponseRedirect('/dashboard')

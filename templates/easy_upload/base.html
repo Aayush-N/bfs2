@@ -19,6 +19,16 @@
     <!-- Font Awesome JS -->
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+    <style type="text/css">
+        .badge{
+          animation:blinkingText 0.8s infinite;
+        }
+        @keyframes blinkingText{
+          0%{   color: #ff0000; }
+          50%{  color: transparent; }\
+          100%{ color: #ff0000; }
+        }
+    </style>
 
 </head>
 
@@ -53,7 +63,17 @@
                 <li class="{% if test %}active {% endif %}">
                     <a href="{% url "easy_upload_test" %}">Upload Summary</a>
                 </li>
-
+                <li class="{% if message %} active {% endif %}">
+                    <a href="{% url "easy_upload_message" %}">Send Message</a>
+                </li>
+                <li class="{% if settings %} active {% endif %}">
+                    <a href="{% url "easy_upload_settings" %}">Settings</a>
+                </li>
+                {% if request.user.department.test_mode %}
+                    <li class="badge">
+                        Test Mode is on
+                    </li>
+                {% endif %}
             </ul>
 
             <ul class="list-unstyled CTAs">

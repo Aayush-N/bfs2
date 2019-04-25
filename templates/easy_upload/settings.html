@@ -1,0 +1,30 @@
+{% extends "easy_upload/base.html" %}
+{% load static %}
+{% block content %}
+
+<style type="text/css">
+  a.button:hover{
+    background-color: white;
+    color: #cc2c91;
+  }
+</style>
+
+<h2>Settings</h2>
+<p></p>
+{% if request.user.department.test_mode %}
+  <p>The<span style="color: #ff0000;"> Test Mode is on</span>. Please make sure the test mode is off if the process has already started. Test mode stops saving answers and is only used for testing. This also stops you from sending messages.</p>
+{% endif %}
+
+<div class="row col-lg-3">
+  <a href="{% url "test_mode" %}" class="button p-2">
+    Turn test mode {% if not request.user.department.test_mode %} On {% else %} Off {% endif %}
+  </a>
+</div>
+
+<div class="line"></div>
+
+<div>
+  <p>You can validate your uploads using <a href="{% url "easy_upload_test" %}">this link</a>.</p>
+</div>
+
+{% endblock %}

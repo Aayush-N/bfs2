@@ -27,6 +27,10 @@ class OTPTrackResource(resources.ModelResource):
 	class Meta:
 		model = OTPTrack
 
+class MessageResource(resources.ModelResource):
+	class Meta:
+		model = Message
+
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin, ImportExportModelAdmin):
 
@@ -180,9 +184,24 @@ class SubjectAdmin(ImportExportModelAdmin):
 	search_fields = ("usn",)
 	resource_class = OTPTrackResource
 
+@admin.register(Message)
+class MessageAdmin(ImportExportModelAdmin):
+	list_display = ("sent_by", "time_stamp")
+	search_fields = ("sent_by",)
+
+	resource_class = MessageResource
+
+	def get_readonly_fields(self, request, obj=None):
+		return list(set(
+			[field.name for field in self.opts.local_fields] +
+			[field.name for field in self.opts.local_many_to_many]
+		))
+
+	def has_delete_permission(self, request, obj=None):
+		return False
+
 
 admin.site.register(Department)
 admin.site.register(Semester)
 admin.site.register(UserType)
-admin.site.register(Message)
 

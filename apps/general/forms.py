@@ -1,5 +1,6 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django import forms
+from .models import Message
 
 
 class LoginForm(AuthenticationForm):
@@ -38,3 +39,9 @@ class FileUploadForm(forms.Form):
     def clean(self):
         cleaned_data = super(FileUploadForm, self).clean()
         file = cleaned_data.get('file')
+
+class MessageForm(forms.ModelForm):
+    
+    class Meta:
+        model = Message
+        exclude = ['sent_by', 'time_stamp']

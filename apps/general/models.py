@@ -28,6 +28,7 @@ class Department(models.Model):
 
     name = models.CharField("Name", max_length=250, help_text="Name of the department")
     d_type = models.CharField(choices=DEPT, default='teaching', max_length=15)
+    test_mode = models.BooleanField("Test Mode", default=False, help_text='This is used to test the data uploaded.')
 
     def __str__(self):
         return self.name
@@ -167,7 +168,9 @@ class Message(models.Model):
 	This stores the message that will be sent to the students.
 	"""
 
+    sent_by = models.ForeignKey("user", null=True, blank=True)
     message_text = models.TextField("Message to send to students", max_length=1000)
+    time_stamp = models.TimeField("Time", auto_now_add=True, blank=True, null=True)
 
     def __str__(self):
         return self.message_text
