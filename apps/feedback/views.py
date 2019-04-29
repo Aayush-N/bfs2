@@ -772,7 +772,7 @@ def student_view_consolidated(request):
 
 	# print("_-_-_")
 	for i in report:
-		if i.name not in temp:
+		if i.name not in temp and i.department in department:
 			department[i.department][1]+=1
 			temp.append(i.name)
 	count = len(temp)
@@ -1564,7 +1564,7 @@ def previous_consolidated(request, id):
 
 	# print("_-_-_")
 	for i in report:
-		if i.name not in temp:
+		if i.name not in temp and i.department in department:
 			department[i.department][1]+=1
 			temp.append(i.name)
 	count = len(temp)
