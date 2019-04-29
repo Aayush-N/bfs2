@@ -146,7 +146,8 @@ USE_TZ = True
 if DEBUG:
     STATIC_URL = "/static/"
 else:
-    STATIC_URL = "/static/"
+    STATIC_URL = "https://cdn.bmsit.ac.in/bfs/"
+
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles/")
 STATICFILES_DIRS = [STATIC_DIR]
 CORPUS_DIR = os.path.join(BASE_DIR, "corpus/")
