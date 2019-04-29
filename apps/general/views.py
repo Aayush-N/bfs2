@@ -698,7 +698,7 @@ def ping_url(request):
 	for teacher in data:
 		try:
 			r = requests.get(
-				"http://localhost:8000/__/__/--/__/__sreports/%s/" % (teacher.username)
+				"https://feedback360.bmsit.ac.in/__/__/--/__/__sreports/%s/" % (teacher.username)
 			)
 			count += 1
 		except:
