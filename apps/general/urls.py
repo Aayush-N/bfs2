@@ -36,5 +36,6 @@ urlpatterns = [
     url(r"^easy-upload/summary", views.easy_upload_test, name="easy_upload_test"),
     url(r"^easy-upload/message", views.easy_upload_message, name="easy_upload_message"),
     url(r"^easy-upload/settings", views.easy_upload_settings, name="easy_upload_settings"),
+    url(r"^easy-upload/teacher-list", views.teachers_list, name="easy_upload_teacher_list"),
     # url(r'^consolidated/', views.consolidated.as_view(), name='feedback/consolidated_report'),
 ]

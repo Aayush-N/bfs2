@@ -37,9 +37,9 @@ from django.core.urlresolvers import resolve
 from django.contrib.auth import logout
 
 from .models import User
-from apps.feedback.models import FeedbackForm
+from apps.feedback.models import *
 
-from apps.feedback.forms import FeedbackAnswerForm
+from apps.feedback.forms import FeedbackAnswerForm, FeedbackProcessForm
 
 from django.contrib.auth.hashers import make_password, check_password
 import random
@@ -214,7 +214,7 @@ class HomeView(FormView):
 					if qs.department.test_mode:
 						self.password_update(random_otp, usn)
 						messages.error(
-							request, "The OTP is \n" + random_otp
+							request, "The OTP is \n" + random_otp + "NOTE: If you're a student please don't give feedback, your answers won't be saved. Please contact your department coordinator."
 							)
 						return HttpResponseRedirect("/login/usn=" + usn)
 
@@ -326,6 +326,7 @@ class MainView(TemplateView):
 			subject__elective=False,
 			subject__project=False,
 			ug=self.user.ug,
+			is_active=True,
 		)
 		for i in theory_subject:
 			subject_list.append(i.pk)
@@ -338,6 +339,7 @@ class MainView(TemplateView):
 			subject__elective=True,
 			ug=self.user.ug,
 			subject__in=self.user.elective.all(),
+			is_active=True,
 		)
 		for i in elective_subject:
 			subject_list.append(i.pk)
@@ -396,6 +398,7 @@ class MainView(TemplateView):
 			subject__theory=False,
 			subject__elective=False,
 			ug=self.user.ug,
+			is_active=True,
 		)
 		for i in project_subject:
 			subject_list.append(i.pk)
@@ -688,27 +691,23 @@ def ping_url(request):
 	This view is used to open reports of each and every faculty members.
 	This is used to store the consolidated report data.
 	"""
-	conn = psycopg2.connect(
-		database="feedback",
-		user="postgres",
-		password="feedback321",
-		host="13.232.62.217",
-		port="5432",
-	)
-	cursor = conn.cursor()
+	
+	data = User.objects.filter(user_type__name="Faculty")
+	count = 0
 
-	cursor.execute(
-		"SELECT username FROM general_user A, general_user_user_type B WHERE A.id = B.user_id AND B.usertype_id = 4 ORDER BY username;"
-	)
-	data = cursor.fetchall()
+	for teacher in data:
+		try:
+			r = requests.get(
+				"http://localhost:8000/__/__/--/__/__sreports/%s/" % (teacher.username)
+			)
+			count += 1
+		except:
+			pass
+	messages.success(request, 'All %d faculty reports generated.' %(count))
 
-	for i in data:
-		r = requests.get(
-			"https://feedback360.bmsit.ac.in/__/__/--/__/__sreports/%s/" % (i[0])
-		)
-		print(i[0])
+	# print("Count", count)
 
-	return HttpResponse("Successfully Pinged all reports")
+	return HttpResponseRedirect('/easy-upload/settings')
 
 
 # @login_required(login_url='/signin/')
@@ -1640,8 +1639,26 @@ def easy_upload(request):
 
 	template_name = "easy_upload/home.html"
 	if request.user.groups.filter(name='feedback_admin').exists():
+
+		if request.user.is_superuser:
+			departments = Department.objects.filter(d_type="teaching").order_by('id').values('name').distinct()
+		else:
+			department = request.user.department
+		completed = {}
+		total = 0
+
+		if request.user.is_superuser:
+			for dept in departments:
+
+				completed[dept['name']] = User.objects.filter(department__name=dept['name'], is_active=True, user_type__name="Student", done=False).count()
+				total += completed[dept['name']]
+		else:
+			completed[department] = User.objects.filter(department__name=department, is_active=True, user_type__name="Student").count()
+
 		context = {
 				"home":True,
+				"completed":completed,
+				"total": total,
 		}
 		return render(request, template_name, context)
 	else:
@@ -1702,7 +1719,7 @@ def easy_upload_message(request):
 					if data.phone:
 						phone1 = data.phone
 						message = "Dear %s,\n\n%s\n\nyour USN: %s\nregards,\nHoD %s" %(data.first_name, text, data.username, data.department)
-						print(message)
+						# print(message)
 						params = {"number": phone1, "text": message}
 						baseUrl = (
 							"https://www.smsgatewayhub.com/api/mt/SendSMS?APIKey=62sxGWT6MkCjDul6eNKejw&senderid=BMSITM&channel=2&DCS=0&flashsms=0&"
@@ -1759,15 +1776,62 @@ def test_mode(request):
 		return HttpResponseRedirect('/dashboard')
 
 @login_required
+def teachers_list(request):
+	"""
+	"""
+	if request.user.groups.filter(name='feedback_admin').exists():
+
+
+		template_name = "easy_upload/teachers_list.html"
+		teachers = User.objects.filter(department=request.user.department, user_type__name="Faculty")
+		context = {'teachers_list': teachers}
+
+		return render(request, template_name, context)
+
+	else:
+		return HttpResponseRedirect('/dashboard')
+
+@login_required
 def easy_upload_settings(request):
 	"""
 	"""
 
 	template_name = "easy_upload/settings.html"
 	if request.user.groups.filter(name='feedback_admin').exists():
+		current_process = FeedbackProcess.objects.all().order_by('-id')[0]
+		
 		context = {
 				"settings":True,
+				"current_process":current_process,
+				"form": FeedbackProcessForm(),
 		}
-		return render(request, template_name, context)
+
+		if request.method == 'POST':
+			form = FeedbackProcessForm(request.POST)
+			if form.is_valid():
+				# Generate consolidated report for the last time
+				data = User.objects.filter(user_type__name="Faculty")
+
+				for teacher in data:
+					try:
+						r = requests.get(
+							"https://feedback360.bmsit.ac.in/__/__/--/__/__sreports/%s/" % (teacher.username)
+						)
+						count += 1
+					except:
+						pass
+
+				# Deleting all answers
+				StudentAnswer.objects.all().delete()
+
+				# Creating new process
+				process = form.save()
+				title = form.cleaned_data['title']
+				current_process = FeedbackProcess.objects.all().order_by('-id')[0]
+				context['current_process'] = current_process
+				messages.success(request, "All student answers deleted and a new process '%s' Started" %(title))
+			return render(request, template_name, context)
+		else:
+			return render(request, template_name, context)
 	else:
 		return HttpResponseRedirect('/dashboard')

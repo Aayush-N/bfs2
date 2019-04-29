@@ -5,6 +5,7 @@ from import_export import resources
 from .models import *
 
 admin.site.register(ConsolidatedReport)
+admin.site.register(FeedbackProcess)
 
 
 class StudentConsolidatedResource(resources.ModelResource):

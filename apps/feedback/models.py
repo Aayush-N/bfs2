@@ -93,7 +93,6 @@ class StudentAnswer(models.Model):
 
 	If the feedback is to anyone else, it will get stored to the User.
 	"""
-
     question = models.ForeignKey("question")
     teacher = models.ForeignKey("general.teaches", null=True)
 
@@ -142,6 +141,7 @@ class StudentConsolidatedReport(models.Model):
     teacher = models.ForeignKey("general.teaches", null=True)
     count = models.IntegerField("No. of students",null=True, blank=True)
     date_created = models.DateField(auto_now_add=True, blank=True)
+    process = models.ForeignKey("FeedbackProcess", null=True, blank=True)
 
     def __str__(self):
         return self.name + " | "+self.teacher.subject.name + " [" + str(self.count) + "]"
@@ -156,7 +156,7 @@ class FeedbackProcess(models.Model):
     current_year = current_years()
 
     title = models.CharField("Feedback Title", max_length=250)
-    year = models.IntegerField("Year", default=current_year)
+    date = models.DateField("Date", auto_now_add=True, blank=True, null=True)
 
     def __str__(self):
         return self.title

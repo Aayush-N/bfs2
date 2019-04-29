@@ -1,5 +1,5 @@
 from django import forms
-from .models import Answer, StudentAnswer
+from .models import Answer, StudentAnswer, FeedbackProcess
 from django.forms import modelformset_factory
 
 
@@ -45,3 +45,9 @@ AnswerFormSet = modelformset_factory(Answer, form=FeedbackAnswerForm)
 StudentAnswerFormSet = modelformset_factory(
     StudentAnswer, form=StudentFeedbackAnswerForm
 )
+
+class FeedbackProcessForm(forms.ModelForm):
+    
+    class Meta:
+        model = FeedbackProcess
+        exclude = ['year']

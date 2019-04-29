@@ -1,0 +1,36 @@
+{% extends "easy_upload/base.html" %}
+{% load static %}
+{% block content %}
+
+<h2>{{request.user.department}} department's Teacher's List</h2>
+
+<div class="justify-content-center text-center">
+  <div class="table-responsive">
+    <table class="table table-borderless table-striped">
+      <thead>
+        <tr>
+          <td>#</td>
+          <td>ID</td>
+          <td>Name</td>
+          <td>Username</td>
+          <td>E-Mail</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for teacher in teachers_list %}
+          <tr valign="middle">
+            <td>{{forloop.counter}}</td>
+            <td>{{teacher.id}}</td>
+            <td>{{teacher.first_name}}</td>
+            <td>{{teacher.username}}</td>
+            <td>{{teacher.email}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="line"></div>
+
+</div>
+
+{% endblock %}

@@ -21,6 +21,8 @@ urlpatterns = [
 	url(r"^consolidated/$", views.student_view_consolidated, name="consolidated"),
 	url(r"^consolidated_sixty/$",views.student_view_consolidated_sixty,name="consolidated_sixty"),
 	url(r"^report-principal/$",views.select_teacher_principal.as_view(),name="principal-select-faculty"),
+	url(r"^select-report/$",views.select_report.as_view(),name="select_report"),
+	url(r"^previous-report/(?P<id>[-\w.]+)/$",views.previous_consolidated,name="previous_reports"),
 	url(r"^__/__/--/__/__sreports/(?P<username>[-\w.]+)/$",views.Test_report,name="sreports-url"),
 ]
 

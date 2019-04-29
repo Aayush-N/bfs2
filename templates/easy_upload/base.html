@@ -61,13 +61,18 @@
                     </ul>
                 </li>
                 <li class="{% if test %}active {% endif %}">
-                    <a href="{% url "easy_upload_test" %}">Upload Summary</a>
+                    <a href="{% url 'easy_upload_test' %}">Upload Summary</a>
                 </li>
-                <li class="{% if message %} active {% endif %}">
-                    <a href="{% url "easy_upload_message" %}">Send Message</a>
+                <li class="{% if teachers_list %}active {% endif %}">
+                    <a href="{% url 'easy_upload_teacher_list' %}">Teacher's List</a>
+                </li>
+                <li class="{% if message %}active {% endif %}">
+                    <a href="{% url 'easy_upload_message' %}">Send Message 
+                        {% if request.user.department.test_mode %} <span style="font-size: 11px;">[Disabled]</span> {% endif %}
+                    </a>
                 </li>
                 <li class="{% if settings %} active {% endif %}">
-                    <a href="{% url "easy_upload_settings" %}">Settings</a>
+                    <a href="{% url 'easy_upload_settings' %}">Settings</a>
                 </li>
                 {% if request.user.department.test_mode %}
                     <li class="badge">

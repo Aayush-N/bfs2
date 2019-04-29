@@ -1,5 +1,6 @@
 {% extends "easy_upload/base.html" %}
 {% load static %}
+{% load widget_tweaks %}
 {% block content %}
 
 <style type="text/css">
@@ -9,8 +10,20 @@
   }
 </style>
 
+{% if messages %}
+  <div class="span12">
+  {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+          {{ message|safe }}
+      </div>
+  {% endfor %}
+  </div>
+{% endif %}
+
 <h2>Settings</h2>
-<p></p>
+<hr>
+<h4 class="mt-5">Test Mode</h4>
+<p class="mt-2">Turning on test mode will make the OTP display on the login page and the answers aren't saved. This is used for testing purpose.</p>
 {% if request.user.department.test_mode %}
   <p>The<span style="color: #ff0000;"> Test Mode is on</span>. Please make sure the test mode is off if the process has already started. Test mode stops saving answers and is only used for testing. This also stops you from sending messages.</p>
 {% endif %}
@@ -21,10 +34,50 @@
   </a>
 </div>
 
-<div class="line"></div>
-
 <div>
   <p>You can validate your uploads using <a href="{% url "easy_upload_test" %}">this link</a>.</p>
 </div>
+
+<div class="line"></div>
+
+<h4>Start New Feedback Process</h4>
+{% if request.user.is_superuser %}
+  <div>
+    <form class="form-group" action="/easy-upload/settings" method="post" enctype="multipart/form-data" onsubmit="return confirm('This will erase all the answers. Are you sure?');">
+      {% csrf_token %}
+      <div class="row">
+        <div class="m-1 col-lg-2" style="color: #C71585;">
+          Start new process:
+        </div>
+        <div class="m-1 col-lg-8">
+          {% render_field form.title required="required" class="from-control" style="border-radius: 5px;" placeholder="Process Name"%}
+        </div>
+        <div class="m-1 col-lg-2" style="color: #C71585;">
+          Current process:
+        </div>
+        <div class="m-1 col-lg-6">
+          {{current_process}}
+        </div>
+        <div class="m-1 col-lg-12">
+          <p>Please note that starting a new process will completely erase all answers so it's advised to take a backup before doing this.</p>
+        </div>
+        <div class="col-lg-12">
+          <input type="submit" class="btn m-1" value="start">
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="line"></div>
+
+  <h4>Generate Report</h4>
+  <p class="mt-2">This will generate the consolidated reports. This is used if all the teachers haven't opened their reports yet. <strong>Note: </strong>The consolidated reports are only generated if all the faculty have opened their reports.</p>
+  <div class="row col-lg-3 mt-4">
+    <a href="{% url 'ping_url' %}" class="button p-2">
+      Generate
+    </a>
+  </div>
+{% endif %}
+<div class="line"></div>
 
 {% endblock %}

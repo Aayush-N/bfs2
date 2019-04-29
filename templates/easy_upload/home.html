@@ -2,7 +2,25 @@
 {% load static %}
 {% block content %}
 
-<h2>Sequence of uploading file</h2>
+{% if request.user.is_superuser %}
+<h2>Branchwise Student Feedbacks Pending</h2>
+{% else %}
+<h2>{{request.user.department}} Student Feedbacks Pending</h2>
+{% endif %}
+<div style="" class="card">
+  <div class="content">
+      <div class="row justify-content-center">
+        {% for dept, count in completed.items %}
+          <span class="col-lg-2 m-2"> <strong>{{ dept }}:</strong> {{ count }}</span>
+        {% endfor %}
+        {% if request.user.is_superuser %}
+          <span class="col-lg-3 m-2"> <strong>Total Pending:</strong> {{ total }}</span>
+        {% endif %}
+      </div>
+  </div>
+</div>
+
+<h2 class="mt-4">Sequence of uploading file</h2>
 <p>Always follow the following sequence while uploading data. Use this portal only to upload bulk data and use <a>admin</a> to do any kind of modifications. Download the CSV files from the link provided below. Make sure you follow the exact same format for uploading.</p>
 <p>Please contact Administrator if you face any problems.</p>
 {% if request.user.department.test_mode %}

@@ -3505,46 +3505,42 @@ iframe {
                     </a>
                 </li>
                 {% endif %}
-                <li>
-                    <a href="/report">
-                        <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                        <p>P2P Report</p>
+                <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                  <p>Reports<span class="caret"></span></p></a>
+                  <ul style="background:#996fd1; margin-left: 15%; margin-top:2%; width:400px;" class="dropdown-menu">
+                    <li>
+                        <a href="/report">
+                            <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                            <p>P2P Report</p>
 
-                    </a>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/sreports/{{username}}">
+                            <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                            <p>Student Feedback Report</p>
+
+                        </a>
+                    </li>
+                  </ul>
                 </li>
                 <li>
-                    <a href="/sreports/{{username}}">
-                        <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                        <p>Student Feedback Report</p>
-
-                    </a>
-                </li>
-                <li>
-                    {% if user_type == 'Principal' %}
-                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-file-excel-o" aria-hidden="true"></i>
-                        <p>Consolidated Report<span class="caret"></span></p></a>
-                        <ul style="background:#996fd1; margin-left: 15%; margin-top:2%; width:400px;" class="dropdown-menu">
-                          <!-- <li>
-                              <a target="_blank" href="https://cdn.bmsit.ac.in/FirstFeedbackConsolidatedReport_odd sem_2017-18.pdf" download="Odd sem 2017-18 First Feedback Consolidated Report.pdf">18-19 Odd Sem First Report
-                              </a>
-                            </li>
-                           <li>
-                              <a target="_blank" href="https://cdn.bmsit.ac.in/BMSITSecondFeedbackConsolidatedReport_odd%20sem-2017-18.pdf" download="Odd sem 2017-18 Second Feedback Consolidated Report.pdf">18-19 Odd Sem Second Report
-                              </a>
-                            </li>
-                            <li>
-                              <a target="_blank" href="https://cdn.bmsit.ac.in/BMSIT1PeertoPeerConsolidatedReport_even%20sem-2017-18.pdf" download="Even sem 2017-18 First Peer to Peer Feedback Consolidated Report.pdf">Peer-Peer Report
-                              </a>
-                            </li>-->
-							               <li>
-                              <a target="_blank" href="/consolidated">Consolidated Report Odd Sem 2018-19</a>
-                            </li>
-							               <li>
-                              <a target="_blank" href="/consolidated_sixty">Consolidated Under sixty</a>
-                            </li>
+                    {% if user_type == 'Principal' or request.user.is_superuser %}
+                      <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                      <p>Consolidated Report<span class="caret"></span></p></a>
+                      <ul style="background:#996fd1; margin-left: 15%; margin-top:2%; width:400px;" class="dropdown-menu">
+						               <li>
+                            <a target="_blank" href="/consolidated">Consolidated Report Odd Sem 2018-19</a>
+                          </li>
+						               <li>
+                            <a target="_blank" href="/consolidated_sixty">Consolidated Under sixty</a>
+                          </li>
+                          <li>
+                            <a target="_blank" href=" {% url 'select_report' %} ">Previous Reports</a>
+                          </li>
                         </ul>
                       </li>
-                        {% endif %}
+                    {% endif %}
                         {% if user_type == 'Hod' %}
                             <li>
                                 <a href="/report-select-hod">
@@ -3564,12 +3560,6 @@ iframe {
                     <a href="https://goo.gl/forms/CWMAGVBbEAwOEABF2" data-toggle="modal" data-target="#myModal">
                         <i class="fa fa-comment" aria-hidden="true" ></i>
                         <p>Suggestions</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="/send_message" >
-                        <i class="fa fa-comments-o" aria-hidden="true" ></i>
-                        <p>Send Message</p>
                     </a>
                 </li>
                 <li style="margin-bottom:30%;" class="active-pro">
@@ -3603,9 +3593,9 @@ iframe {
                 <div class="row">
                     <div class="col-md-12">
 
-                        <div style="background-color: #996fd1; color: black;" class="card">
+                        <div style="background-color: #996fd1; color: white;" class="card">
                             <div class="header">
-                                <h4 class="title" style="color:black;">Branchwise Student Feedbacks Pending</h4>
+                                <h4 class="title" style="color:white;">Branchwise Student Feedbacks Pending</h4>
                             </div>
                             <div class="content">
                                 <div class="section">
