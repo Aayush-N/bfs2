@@ -143,36 +143,59 @@ class HomeView(FormView):
 			+ "Your OTP for feedback is: "\
 			+ random_otp\
 			+ "\n\nThanks,\nBFS-BMSIT"
-
-		if qs.department.name == 'CSE':
-			fromaddr = "feedbackcseotp@bmsit.in"
-		elif qs.department.name == 'ECE':
-			fromaddr = "feedbackeceotp@bmsit.in"
-		elif qs.department.name == 'ISE':
-			fromaddr = "feedbackiseotp@bmsit.in"
-		elif qs.department.name == 'CIVIL':
-			fromaddr = "feedbackcseotp@bmsit.in"
-		elif qs.department.name == 'EEE':
-			fromaddr = "feedbackeeeotp@bmsit.in"
-		elif qs.department.name == 'MECH':
-			fromaddr = "feedbackmechotp@bmsit.in"
-		elif qs.department.name == 'TCE':
-			fromaddr = "feedbacktceotp@bmsit.in"
-		elif qs.department.name == 'MCA':
-			fromaddr = "feedbackeceotp@bmsit.in"
-		else:
+		try:
+			if qs.department.name == 'CSE':
+				fromaddr = "feedbackcseotp@bmsit.in"
+				OTPTrack.objects.create(email=qs.email, usn=qs.username)
+			elif qs.department.name == 'ECE':
+				fromaddr = "feedbackeceotp@bmsit.in"
+				OTPTrack.objects.create(email=qs.email, usn=qs.username)
+			elif qs.department.name == 'ISE':
+				fromaddr = "feedbackiseotp@bmsit.in"
+				OTPTrack.objects.create(email=qs.email, usn=qs.username)
+			elif qs.department.name == 'CIVIL':
+				fromaddr = "feedbackcseotp@bmsit.in"
+				OTPTrack.objects.create(email=qs.email, usn=qs.username)
+			elif qs.department.name == 'EEE':
+				fromaddr = "feedbackeeeotp@bmsit.in"
+				OTPTrack.objects.create(email=qs.email, usn=qs.username)
+			elif qs.department.name == 'MECH':
+				fromaddr = "feedbackmechotp@bmsit.in"
+				OTPTrack.objects.create(email=qs.email, usn=qs.username)
+			elif qs.department.name == 'TCE':
+				fromaddr = "feedbacktceotp@bmsit.in"
+				OTPTrack.objects.create(email=qs.email, usn=qs.username)
+			elif qs.department.name == 'MCA':
+				fromaddr = "feedbackeceotp@bmsit.in"
+				OTPTrack.objects.create(email=qs.email, usn=qs.username)
+			else:
+				email = EmailMessage(
+					"Feedback OTP",
+					"Hi, "
+					+ qs.first_name
+					+ "\n\n"
+					+ "Your OTP for feedback is: "
+					+ random_otp
+					+ "\n\nThanks,\nBFS-BMSIT",
+					"Feedback Support <feedback@bmsit.ac.in>",
+					[qs.email],
+				)
+				#email.send()
+				OTPTrack.objects.create(email=qs.email, usn=qs.username)
+				return
+		except Exception as e:
 			email = EmailMessage(
-				"Feedback OTP",
-				"Hi, "
-				+ qs.first_name
-				+ "\n\n"
-				+ "Your OTP for feedback is: "
-				+ random_otp
-				+ "\n\nThanks,\nBFS-BMSIT",
-				"Feedback Support <feedback@bmsit.ac.in>",
-				[qs.email],
-			)
-			#email.send()
+					"Feedback OTP",
+					"Hi, "
+					+ qs.first_name
+					+ "\n\n"
+					+ "Your OTP for feedback is: "
+					+ random_otp
+					+ "\n\nThanks,\nBFS-BMSIT",
+					"Feedback Support <feedback@bmsit.ac.in>",
+					[qs.email],
+				)
+				#email.send()
 			OTPTrack.objects.create(email=qs.email, usn=qs.username)
 			return
 
@@ -203,7 +226,10 @@ class HomeView(FormView):
 
 			# Checks if user is admin and redirects directly
 			if qs.is_superuser:
-				messages.error(request, "Remember Admin, with great power comes great responsibility.")
+				if qs.is_superuser:
+					messages.error(request, "Remember Admin, with great power comes great responsibility.")
+				else:
+					messages.error(request, "Please login with your existing password")
 				return HttpResponseRedirect("/login/usn=" + usn)
 
 				# Checks if done=False
