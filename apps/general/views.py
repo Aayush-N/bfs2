@@ -169,35 +169,11 @@ class HomeView(FormView):
 				fromaddr = "feedbackeceotp@bmsit.in"
 				OTPTrack.objects.create(email=qs.email, usn=qs.username)
 			else:
-				email = EmailMessage(
-					"Feedback OTP",
-					"Hi, "
-					+ qs.first_name
-					+ "\n\n"
-					+ "Your OTP for feedback is: "
-					+ random_otp
-					+ "\n\nThanks,\nBFS-BMSIT",
-					"Feedback Support <feedback@bmsit.ac.in>",
-					[qs.email],
-				)
-				#email.send()
+				fromaddr = "feedback@bmsit.in"
 				OTPTrack.objects.create(email=qs.email, usn=qs.username)
-				return
 		except Exception as e:
-			email = EmailMessage(
-					"Feedback OTP",
-					"Hi, "
-					+ qs.first_name
-					+ "\n\n"
-					+ "Your OTP for feedback is: "
-					+ random_otp
-					+ "\n\nThanks,\nBFS-BMSIT",
-					"Feedback Support <feedback@bmsit.ac.in>",
-					[qs.email],
-				)
-				#email.send()
+			fromaddr = "feedback@bmsit.in"
 			OTPTrack.objects.create(email=qs.email, usn=qs.username)
-			return
 
 		msg = MIMEText(body, 'plain')
 		msg['To'] = qs.email
