@@ -216,7 +216,7 @@ class HomeView(FormView):
 					if qs.department.test_mode:
 						self.password_update(random_otp, usn)
 						messages.error(
-							request, "The OTP is \n" + random_otp + "NOTE: If you're a student please don't give feedback, your answers won't be saved. Please contact your department coordinator."
+							request, "The OTP is \n" + random_otp + " NOTE: If you're a student please don't give feedback, your answers won't be saved. Please contact your department coordinator."
 							)
 						return HttpResponseRedirect("/login/usn=" + usn)
 
@@ -417,6 +417,36 @@ class MainView(TemplateView):
 
 		return
 
+	def _student_institute(self):
+		"""
+		This is a compulsory form for the faculty where they give the
+		feedack to he other faculties
+		"""
+
+		# if the hod is also a faculty, he should be removed form the `faculties` list
+		if not self.request.user.institute:
+			institutes = (
+				get_user_model()
+				.objects.filter(user_type__name__in=["Institute"])
+				)
+		else:
+			institutes = ()
+
+		recipient_list = []
+		for i in institutes:
+			recipient_list.append(i.pk)
+		self.request.session["institute_recipients"] = recipient_list
+
+		# This is used in post and will be removed one by one
+		self.request.session["institute_post_recipients"] = recipient_list
+
+		self.request.session["institute_count"] = len(institutes)
+
+		# remove the form as it is already counted
+		self.forms = self.forms.exclude(code="SI")
+
+		return
+
 	def _faculty_mandatory(self):
 		"""
 		This is a compulsory form for the faculty where they give the
@@ -439,7 +469,7 @@ class MainView(TemplateView):
 			recipient_list.append(i.pk)
 		self.request.session["recipients"] = recipient_list
 
-		# This is used in post and will be removed on by one
+		# This is used in post and will be removed one by one
 		self.request.session["post_recipients"] = recipient_list
 
 		self.request.session["count"] = faculties.count()
@@ -486,6 +516,7 @@ class MainView(TemplateView):
 			self._student_theory()
 			self._student_labs()
 			self._student_project()
+			self._student_institute()
 			# if the user is hod as well as faculty, faculties mandatory forms shouldn't
 			# be displayed
 		elif self.user.is_faculty() and not self.user.is_hod():
@@ -519,6 +550,7 @@ class MainView(TemplateView):
 				self.request.session["theory_count"]
 				+ self.request.session["labs_count"]
 				+ self.request.session["project_count"]
+				+ self.request.session["institute_count"]
 			)
 
 		for form in self.forms:

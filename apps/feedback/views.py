@@ -67,31 +67,50 @@ class FeedbackView(FormView):
 		if self.request.user.is_student():
 			self.form_class = StudentFeedbackAnswerForm
 			self.template_name = "feedback/student_entry.html"
+
+			#
 			recipients = self.request.session.get("recipients_theory")
 			recipients = self.get_list(Teaches, recipients)
+
+			#
 			lab_recipients = self.request.session.get("recipients_labs")
 			lab_recipients = self.get_list(Teaches, lab_recipients)
+
+			#
 			project_recipients = self.request.session.get("recipients_project")
 			project_recipients = self.get_list(Teaches, project_recipients)
 
+			#
+			institute_recipients = self.request.session.get("institute_recipients")
+			institute_recipients = self.get_list(get_user_model(), institute_recipients)
+
+			#
 			theory_post_recipients = self.request.session.get("post_recipients_theory")
 			theory_post_recipients = self.get_list(Teaches, theory_post_recipients)
+
+			#
 			lab_post_recipients = self.request.session.get("post_recipients_labs")
 			lab_post_recipients = self.get_list(Teaches, lab_post_recipients)
-			project_post_recipients = self.request.session.get(
-				"post_recipients_project"
-			)
+
+			#
+			project_post_recipients = self.request.session.get("post_recipients_project")
 			project_post_recipients = self.get_list(Teaches, project_post_recipients)
+
+			#
+			institute_post_recipients = self.request.session.get("institute_post_recipients")
+			institute_post_recipients = self.get_list(get_user_model(), institute_post_recipients)
 
 			context["recipients_theory"] = recipients
 			context["recipients_labs"] = lab_recipients
 			context["recipients_project"] = project_recipients
+			context["institute_recipients"] = institute_recipients
 			iterable_forms = self.request.session["form"]
 			iterable_forms = self.get_list(FeedbackForm, iterable_forms)
 
 			theory_count = self.request.session["theory_count"]
 			lab_count = self.request.session["labs_count"]
 			project_count = self.request.session["project_count"]
+			institute_count = self.request.session["institute_count"]
 			context["form_recipients"] = self.request.session.get("form_recipients")
 
 			if theory_count:
@@ -135,6 +154,24 @@ class FeedbackView(FormView):
 					recipients_name = project_post_recipients[0]
 					if self.request.user.is_student():
 						feedback_form = FeedbackForm.objects.get(code="SP")
+						question_count = feedback_form.question.all().count()
+						StudentAnswerFormset = modelformset_factory(
+							StudentAnswer,
+							form=StudentFeedbackAnswerForm,
+							extra=question_count,
+						)
+						formset = StudentAnswerFormset(
+							queryset=StudentAnswer.objects.none()
+						)
+						context["formset"] = formset
+						form_zip = zip(formset, feedback_form.question.all())
+						context["form_zip"] = form_zip
+						context["recipient_name"] = recipients_name
+			elif institute_count:
+				if institute_post_recipients:
+					recipients_name = institute_post_recipients[0]
+					if self.request.user.is_student():
+						feedback_form = FeedbackForm.objects.get(code="SI")
 						question_count = feedback_form.question.all().count()
 						StudentAnswerFormset = modelformset_factory(
 							StudentAnswer,
@@ -234,16 +271,20 @@ class FeedbackView(FormView):
 			theory_count = self.request.session["theory_count"]
 			lab_count = self.request.session["labs_count"]
 			project_count = self.request.session["project_count"]
+			institute_count = self.request.session["institute_count"]
 			count = self.request.session["count"]
 			theory_recipients = self.request.session.get("post_recipients_theory")
 			lab_recipients = self.request.session.get("post_recipients_labs")
 			project_recipients = self.request.session.get("post_recipients_project")
+			institute_recipients = self.request.session.get("institute_recipients")
 			if theory_recipients:
 				theory_recipients = self.get_list(Teaches, theory_recipients)
 			if lab_recipients:
 				lab_recipients = self.get_list(Teaches, lab_recipients)
 			if project_recipients:
 				project_recipients = self.get_list(Teaches, project_recipients)
+			if institute_recipients:
+				institute_recipients = self.get_list(get_user_model(), institute_recipients)
 			iterable_forms = self.request.session.get("form")
 			if iterable_forms:
 				iterable_forms = self.get_list(FeedbackForm, iterable_forms)
@@ -306,6 +347,26 @@ class FeedbackView(FormView):
 								"post_recipients_project"
 							] = self.request.session["post_recipients_project"]
 							self.request.session["project_count"] -= 1
+					elif institute_count:
+						if institute_recipients:
+							feedback_form = FeedbackForm.objects.get(code="SI")
+							question = feedback_form.question.all()
+							# print("Entered")
+							for form, que in zip(formset, question):
+								if not self.request.user.department.test_mode:
+									ans = form.cleaned_data.get("answer")
+									answer = Answer.objects.create(
+										question=que,
+										value=ans,
+										form=feedback_form,
+										recipient=self.get_user(feedback_form.recipient),
+									)
+							del self.request.session["institute_post_recipients"][0]
+							self.request.session[
+								"institute_post_recipients"
+							] = self.request.session["institute_post_recipients"]
+							self.request.session["institute_count"] -= 1
+							self.request.user.institute = True
 					elif iterable_forms:
 						feedback_form = iterable_forms[0]
 						question_count = feedback_form.question.all().count()
@@ -427,17 +488,24 @@ def consolidated(request, username):
 	"""
 	template_name = "feedback/report.html"
 	user = get_user_model().objects.get(username=username)
-	user_type = user.get_user_type()
-	forms = FeedbackForm.objects.filter(recipient=user_type, active=True)
+	user_types = user.user_type.all()
+	ut_list = []
+	for types in user_types:
+		ut_list.append(types.name)
+	# print(ut_list)
+	forms = FeedbackForm.objects.filter(recipient__name__in=ut_list, active=True)
+	print(forms)
 	results = dict()
 	for form in forms:
 		answers = Answer.objects.filter(form=form, recipient=user)
-		results[form] = answers
+		if answers:
+			results[form] = answers
 	excellent = 0
 	good = 0
 	satisfactory = 0
 	poor = 0
 	very_poor = 0
+	total = 0
 	for form, answers in results.items():
 		for que in form.question.all():
 			for answer in answers:
@@ -451,12 +519,13 @@ def consolidated(request, username):
 					poor += 1
 				if answer.value == "Very Poor" and answer.question == que:
 					very_poor += 1
-					# print(excellent)
-					# print(good)
-					# print(satisfactory)
-					# print(poor)
-					# print(very_poor)
-					# print(form.title)
+		# print(excellent)
+		# print(good)
+		# print(satisfactory)
+		# print(poor)
+		# print(very_poor)
+		# print(form.title)
+
 		total = (
 			(
 				(excellent * 5)

@@ -39,8 +39,8 @@ class FeedbackForm(models.Model):
 
     active = models.BooleanField(default=True)
 
-    # def __str__(self):
-    # 	return self.title
+    def __str__(self):
+    	return str(self.title)
 
 
 class Question(models.Model):
@@ -53,8 +53,8 @@ class Question(models.Model):
     )
     text = models.TextField("Question")
 
-    # def __str__(self):
-    # 	return self.text
+    def __str__(self):
+    	return str(self.text)
 
 
 class Answer(models.Model):
@@ -82,7 +82,7 @@ class Answer(models.Model):
     recipient = models.ForeignKey(get_user_model(), null=True)
 
     def __str__(self):
-        return self.question.text
+        return self.question.text + " (" + str(self.value) + ")"
 
 
 class StudentAnswer(models.Model):
@@ -109,7 +109,10 @@ class StudentAnswer(models.Model):
     recipient = models.ForeignKey(get_user_model(), null=True)
 
     def __str__(self):
-        return self.teacher.teacher.first_name
+        try:
+            return self.teacher.teacher.first_name
+        except:
+            return str(self.value)
 
 
 class ConsolidatedReport(models.Model):

@@ -42,7 +42,7 @@ class UserAdmin(DjangoUserAdmin, ImportExportModelAdmin):
 	search_fields = ("email", "first_name", "last_name", "username", "phone")
 	ordering = ("username",)
 
-	list_filter = ('sem', 'sec', 'department', 'elective', 'batch', 'sub_batch')
+	list_filter = ('sem', 'sec', 'department', 'elective', 'batch', 'sub_batch', 'user_type')
 
 	resource_class = UserResource
 
