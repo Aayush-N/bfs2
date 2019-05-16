@@ -65,6 +65,8 @@ import psycopg2
 import urllib.parse as ap
 import urllib.request
 
+Debug=True
+
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 	return ''.join(random.SystemRandom().choice(chars) for _ in range(size))
 
@@ -122,7 +124,7 @@ class HomeView(FormView):
 			"https://www.smsgatewayhub.com/api/mt/SendSMS?APIKey=62sxGWT6MkCjDul6eNKejw&senderid=BMSITM&channel=2&DCS=0&flashsms=0&"
 			+ ap.urlencode(params)
 		)
-		#urllib.request.urlopen(baseUrl).read(1000)
+		urllib.request.urlopen(baseUrl).read(1000)
 		OTPTrack.objects.create(phone=phone, usn=usn)
 
 	def password_update(self, random_otp, usn):
