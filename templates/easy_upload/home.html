@@ -42,8 +42,9 @@
   {% for rep, value in report.items %}
     {% if rep and value %}
       <div class="card p-2 col-lg-5 m-1">
-        <h5 class="text-center">{{rep.title}}</h5>
-        <canvas id="report-{{rep.id}}" style="height: 250px; width: 100%;"></canvas>
+        <h5 class="text-center mb-1">{{rep.title}}</h5>
+        <hr>
+        <canvas id="report-{{rep.id}}" style="height: 320px; width: 100%;"></canvas>
       </div>
     {% endif %}
   {% endfor %}
@@ -115,6 +116,9 @@
                   'rgba(255, 50, 50, 1)',
                   'rgba(174, 254, 87, 1)',
                   'rgba(62, 54, 109, 1)',
+                  'rgba(255, 255, 1, 1)',
+                  'rgba(0, 255, 0, 1)',
+                  'rgba(255, 0, 255, 1)',
               ],
               borderColor: [
                   'rgba(54, 162, 235, 1)',
@@ -127,6 +131,9 @@
                   'rgba(255, 50, 50, 1)',
                   'rgba(174, 254, 87, 1)',
                   'rgba(62, 54, 109, 1)',
+                  'rgba(255, 255, 1, 1)',
+                  'rgba(0, 255, 0, 1)',
+                  'rgba(255, 0, 255, 1)',
               ],
               borderWidth: 1
           }]
@@ -170,10 +177,11 @@
   {% for rep, value in report.items %}
     <script>
     var ctx = document.getElementById('report-{{rep.id}}').getContext('2d');
+    Chart.defaults.global.legend.display = false;
     var myChart = new Chart(ctx, {
         type: 'polarArea',
         data: {
-            labels: [{% for i in value %}'{{ i.subject }} ({{i.total}})', {% endfor %}],
+            labels: [{% for i in value %}'{{ i.subject }} ({{i.department.name}})', {% endfor %}],
             datasets: [{
                 label: '{{rep.title}}',
                 data: [{% for i in value %}{{ i.total }},{% endfor %}],
@@ -188,6 +196,9 @@
                     'rgba(255, 50, 50, 1)',
                     'rgba(174, 254, 87, 1)',
                     'rgba(62, 54, 109, 1)',
+                    'rgba(255, 255, 1, 1)',
+                    'rgba(0, 255, 0, 1)',
+                    'rgba(255, 0, 255, 1)',
                 ],
                 borderColor: [
                     'rgba(54, 162, 235, 1)',
@@ -200,6 +211,9 @@
                     'rgba(255, 50, 50, 1)',
                     'rgba(174, 254, 87, 1)',
                     'rgba(62, 54, 109, 1)',
+                    'rgba(255, 255, 1, 1)',
+                    'rgba(0, 255, 0, 1)',
+                    'rgba(255, 0, 255, 1)',
                 ],
                 borderWidth: 1
             }]

@@ -849,7 +849,7 @@ def student_view_consolidated(request):
 	# print("Report",report)
 	department = {}
 	total_count = 0
-	departments = Department.objects.filter(d_type='teaching')
+	departments = Department.objects.filter(d_type='teaching').order_by('id')
 
 
 	# print("_-_-_")
