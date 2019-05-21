@@ -66,7 +66,7 @@
 	<div class="container">
 		{% if not error %}
 			<form method="post">{% csrf_token %}
-		  		<h3> Please select the Faculty to view the Report</h3><br>
+		  		<h3> Please select the Report</h3><br>
 				<p>
 					<select style="width:20%;" name='process'>
 					{% for process in report_list %}

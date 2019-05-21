@@ -29,7 +29,7 @@ from .models import (
 )
 from .forms import FeedbackAnswerForm, AnswerFormSet, StudentFeedbackAnswerForm
 
-from apps.general.models import UserType, Teaches, User
+from apps.general.models import *
 
 import json
 import random
@@ -506,6 +506,7 @@ def consolidated(request, username):
 	poor = 0
 	very_poor = 0
 	total = 0
+	current_process = FeedbackProcess.objects.filter(p2p=True).order_by('-id')[0]
 	for form, answers in results.items():
 		for que in form.question.all():
 			for answer in answers:
@@ -525,33 +526,39 @@ def consolidated(request, username):
 		# print(poor)
 		# print(very_poor)
 		# print(form.title)
-
-		total = (
-			(
-				(excellent * 5)
-				+ (good * 4)
-				+ (satisfactory * 3)
-				+ (poor * 2)
-				+ (very_poor)
+		try:
+			total = (
+				(
+					(excellent * 5)
+					+ (good * 4)
+					+ (satisfactory * 3)
+					+ (poor * 2)
+					+ (very_poor)
+				)
+				/ ((excellent + good + satisfactory + poor + very_poor) * 5)
+				* 100
 			)
-			/ ((excellent + good + satisfactory + poor + very_poor) * 5)
-			* 100
-		)
+		except:
+			pass
 		# print(total)
-		if not ConsolidatedReport.objects.filter(
-			name=user.first_name,
-			form_name=form.title,
-			total=round(total, 2),
-			department=user.department,
-		).exists():
-			total_count = ConsolidatedReport.objects.create(
-				name=user.first_name,
+		if total > 0:
+			if not ConsolidatedReport.objects.filter(
+				teacher=user,
 				form_name=form.title,
-				total=round(total, 2),
-				department=user.department,
-			)
+				process=current_process,
+			).exists():
+				total_count = ConsolidatedReport.objects.create(
+					teacher=user,
+					form_name=form.title,
+					total=round(total, 2),
+					process=current_process,
+				)
+			else:
+				rep = ConsolidatedReport.objects.get(teacher=user, form_name=form.title, process=current_process)
+				rep.total = round(total, 2)
+				rep.save()
 
-	context = {"results": results, "user": user}
+	context = {"results": results, "user": user, "process":current_process}
 	return render(request, template_name, context)
 
 
@@ -561,7 +568,8 @@ def view_consolidated(request):
 	"""
 	template_name = "consolidated_report.html"
 	report = ConsolidatedReport.objects.all()
-	context = {"report": report}
+	current_process = FeedbackProcess.objects.filter(p2p=True).order_by('-id')[0]
+	context = {"report": report, "process":current_process}
 	return render(request, template_name, context)
 
 
@@ -775,26 +783,41 @@ def sconsolidated(request, username):
 		# print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
 		# print(no_stu)
 			if grand_total != 0:
-				current_process = FeedbackProcess.objects.all().order_by('-id')[0]
+				current_process = FeedbackProcess.objects.filter(p2p=False).order_by('-id')[0]
 				if not StudentConsolidatedReport.objects.filter(
-					name=user.first_name,
-					department=user.department,
-					teacher=i,
+					teacher=user,
+					department=i.department,
+					subject=i.subject.name,
+					sem=i.sem.sem,
+					sec=i.sec,
+					batch=i.batch,
+					sub_batch=i.sub_batch,
+					ug=i.ug,
 					process=current_process
 				).exists():
 					total_count = StudentConsolidatedReport.objects.create(
-						name=user.first_name,
+						teacher=user,
+						department=i.department,
+						subject=i.subject.name,
+						sem=i.sem.sem,
+						sec=i.sec,
+						batch=i.batch,
+						sub_batch=i.sub_batch,
+						ug=i.ug,
 						total=round(grand_total, 2),
-						department=user.department,
-						teacher=i,
 						count=no_stu,
 						process=current_process
 					)
 				else:
 					report = StudentConsolidatedReport.objects.get(
-						name=user.first_name,
-						department=user.department,
-						teacher=i,
+						teacher=user,
+						department=i.department,
+						subject=i.subject.name,
+						sem=i.sem.sem,
+						sec=i.sec,
+						batch=i.batch,
+						sub_batch=i.sub_batch,
+						ug=i.ug,
 						process=current_process
 					)
 					report.total = round(grand_total, 2)
@@ -820,38 +843,21 @@ def student_view_consolidated(request):
 		return HttpResponseRedirect(reverse_lazy("dashboard"))
 	template_name = "student_consolidated_report.html"
 
-	current_process = FeedbackProcess.objects.all().order_by('-id')[0]
-	report = StudentConsolidatedReport.objects.filter(process=current_process).order_by("name")
-	temp = []
-	department = {
-		"CSE": ["Computer Science & Engineering",0],
-		"MECH": ["Mechanical Engineering",0],
-		"CHEM": ["Chemistry",0],
-		"PHY": ["Phyiscs",0],
-		"MCA": ["MCA",0],
-		"MECH": ["Mechanical Engineering",0],
-		"TCE": ["Telecom Engineering",0],
-		"EEE": ["Electrical Engineering",0],
-		"ECE": ["Electronics Engineering",0],
-		"CIVIL": ["Civil Engineering",0],
-		"ISE": ["Information Science Engineering",0],
-		"MATH": ["Mathematics",0],
-	}
+	current_process = FeedbackProcess.objects.filter(p2p=False).order_by('-id')[0]
+	report = StudentConsolidatedReport.objects.filter(process=current_process).order_by("teacher__first_name")
+	department = {}
+	total_count = 0
+	departments = Department.objects.filter(d_type='teaching')
 
 
 	# print("_-_-_")
-	for i in report:
-		if i.name not in temp and i.department in department:
-			department[i.department][1]+=1
-			temp.append(i.name)
-	count = len(temp)
+	for dept in departments:
+		department[dept] = len(StudentConsolidatedReport.objects.filter(teacher__department=dept).order_by('teacher').values('teacher').distinct())
+		total_count += department[dept]
+	# print(department)
 	# print("_-_-_")
 
-	context = {"report": report, "dept": department, "count":count, "process":current_process}
-	# for i in report:
-	# 	print(i.name)
-	# 	print(i.department)
-	# 	print(i.total)
+	context = {"report": report, "dept": department, "count":total_count, "process":current_process}
 	return render(request, template_name, context)
 
 
@@ -866,14 +872,14 @@ def student_view_consolidated_sixty(request):
 		return HttpResponseRedirect(reverse_lazy("dashboard"))
 	template_name = "student_consolidated_report_sixty.html"
 	current_process = FeedbackProcess.objects.all().order_by('-id')[0]
-	report = StudentConsolidatedReport.objects.filter(total__lt=60.0, process=current_process).order_by("name")
-	print("_-_-_")
+	report = StudentConsolidatedReport.objects.filter(total__lt=60.0, process=current_process).order_by("teacher__first_name")
+	# print("_-_-_")
 	temp = []
 	for i in report:
 		if i.name not in temp:
 			temp.append(i.name)
 	count = len(temp)
-	print("_-_-_")
+	# print("_-_-_")
 	context = {"report": report, "count": count, "process":current_process}
 	# for i in report:
 	# 	print(i.name)
@@ -1106,24 +1112,39 @@ def Test_report(request, username):
 			if grand_total != 0:
 				current_process = FeedbackProcess.objects.all().order_by('-id')[0]
 				if not StudentConsolidatedReport.objects.filter(
-					name=user.first_name,
-					department=user.department,
-					teacher=i,
+					teacher=user,
+					department=i.department,
+					subject=i.subject.name,
+					sem=i.sem.sem,
+					sec=i.sec,
+					batch=i.batch,
+					sub_batch=i.sub_batch,
+					ug=i.ug,
 					process=current_process
 				).exists():
 					total_count = StudentConsolidatedReport.objects.create(
-						name=user.first_name,
+						teacher=user,
+						department=i.department,
+						subject=i.subject.name,
+						sem=i.sem.sem,
+						sec=i.sec,
+						batch=i.batch,
+						sub_batch=i.sub_batch,
+						ug=i.ug,
 						total=round(grand_total, 2),
-						department=user.department,
-						teacher=i,
 						count=no_stu,
 						process=current_process
 					)
 				else:
 					report = StudentConsolidatedReport.objects.get(
-						name=user.first_name,
-						department=user.department,
-						teacher=i,
+						teacher=user,
+						department=i.department,
+						subject=i.subject.name,
+						sem=i.sem.sem,
+						sec=i.sec,
+						batch=i.batch,
+						sub_batch=i.sub_batch,
+						ug=i.ug,
 						process=current_process
 					)
 					report.total = round(grand_total, 2)
@@ -1587,7 +1608,7 @@ class select_report(FormView):
 
 		if str(user_type[0]).upper() == "PRINCIPAL" or user.is_superuser:
 			
-			report_list = FeedbackProcess.objects.all().order_by('date')
+			report_list = FeedbackProcess.objects.filter(p2p=False).order_by('date')
 			# Teacher.objects.order_by('fname').filter(dno__dname=dname)
 			context = {"report_list": report_list}
 			return render(request, self.template_name, context)
@@ -1612,34 +1633,21 @@ def previous_consolidated(request, id):
 		return HttpResponseRedirect(reverse_lazy("dashboard"))
 	template_name = "student_consolidated_report.html"
 
-	current_process = FeedbackProcess.objects.get(id=id)
-	report = StudentConsolidatedReport.objects.filter(process__id=id).order_by("name")
-	temp = []
-	department = {
-		"CSE": ["Computer Science & Engineering",0],
-		"MECH": ["Mechanical Engineering",0],
-		"CHEM": ["Chemistry",0],
-		"PHY": ["Phyiscs",0],
-		"MCA": ["MCA",0],
-		"MECH": ["Mechanical Engineering",0],
-		"TCE": ["Telecom Engineering",0],
-		"EEE": ["Electrical Engineering",0],
-		"ECE": ["Electronics Engineering",0],
-		"CIVIL": ["Civil Engineering",0],
-		"ISE": ["Information Science Engineering",0],
-		"MATH": ["Mathematics",0],
-	}
+	current_process = FeedbackProcess.objects.filter(p2p=False).order_by('-id')[0]
+	report = StudentConsolidatedReport.objects.filter(process__id=id).order_by("teacher__first_name")
+	department = {}
+	total_count = 0
+	departments = Department.objects.filter(d_type='teaching')
 
 
 	# print("_-_-_")
-	for i in report:
-		if i.name not in temp and i.department in department:
-			department[i.department][1]+=1
-			temp.append(i.name)
-	count = len(temp)
+	for dept in departments:
+		department[dept] = len(StudentConsolidatedReport.objects.filter(teacher__department=dept).order_by('teacher').values('teacher').distinct())
+		total_count += department[dept]
+	# print(department)
 	# print("_-_-_")
 
-	context = {"report": report, "dept": department, "count":count, "process":current_process}
+	context = {"report": report, "dept": department, "count":total_count, "process":current_process}
 	# for i in report:
 	# 	print(i.name)
 	# 	print(i.department)

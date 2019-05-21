@@ -720,6 +720,18 @@ def show_message_sent_view(request):
 
 
 import requests
+import threading
+
+def ping():
+
+	data = User.objects.filter(user_type__name="Faculty")
+	for teacher in data:
+		try:
+			r = requests.get(
+				"https://feedback360.bmsit.ac.in/__/__/--/__/__sreports/%s/" % (teacher.username)
+			)
+		except Exception as e:
+			pass
 
 
 def ping_url(request):
@@ -727,19 +739,12 @@ def ping_url(request):
 	This view is used to open reports of each and every faculty members.
 	This is used to store the consolidated report data.
 	"""
-	
-	data = User.objects.filter(user_type__name="Faculty")
-	count = 0
 
-	for teacher in data:
-		try:
-			r = requests.get(
-				"https://feedback360.bmsit.ac.in/__/__/--/__/__sreports/%s/" % (teacher.username)
-			)
-			count += 1
-		except:
-			pass
-	messages.success(request, 'All %d faculty reports generated.' %(count))
+	t = threading.Thread(target=ping)
+	t.setDaemon(True)
+	t.start()
+
+	messages.success(request, 'The report is being generated please check back after a while.')
 
 	# print("Count", count)
 
@@ -1536,7 +1541,7 @@ def easy_upload_users(request):
 						user.first_name=first_name
 						user.email = email
 						user.is_active = is_active
-						user.phone = phone
+						user.phone = str(phone)
 						user.sem = str(sem)
 						user.sec = sec
 						user.department = department
@@ -1676,8 +1681,18 @@ def easy_upload(request):
 	template_name = "easy_upload/home.html"
 	if request.user.groups.filter(name='feedback_admin').exists():
 
+		process = FeedbackProcess.objects.filter(p2p=False).order_by('-id')
+
+		report = {}
+
+		try:
+			report[process[0]] = StudentConsolidatedReport.objects.filter(process=process[0], teacher=request.user)
+			report[process[1]] = StudentConsolidatedReport.objects.filter(process=process[1], teacher=request.user)
+		except:
+			pass
+
 		if request.user.is_superuser:
-			departments = Department.objects.filter(d_type="teaching").order_by('id').values('name').distinct()
+			departments = Department.objects.filter(d_type="teaching").exclude(name__in=['MATH', 'PHY', 'CHEM', 'HUMANITIES']).order_by('id').values('name').distinct()
 		else:
 			department = request.user.department
 		completed = {}
@@ -1689,12 +1704,13 @@ def easy_upload(request):
 				completed[dept['name']] = User.objects.filter(department__name=dept['name'], is_active=True, user_type__name="Student", done=False).count()
 				total += completed[dept['name']]
 		else:
-			completed[department] = User.objects.filter(department__name=department, is_active=True, user_type__name="Student").count()
+			completed[department] = User.objects.filter(department__name=department, is_active=True, user_type__name="Student", done=False).count()
 
 		context = {
 				"home":True,
 				"completed":completed,
 				"total": total,
+				"report":report,
 		}
 		return render(request, template_name, context)
 	else:
@@ -1812,6 +1828,19 @@ def test_mode(request):
 		return HttpResponseRedirect('/dashboard')
 
 @login_required
+def start_institute_feedback(request):
+	"""
+	"""
+	if request.user.groups.filter(name='feedback_admin').exists():
+
+		users = User.objects.filter(user_type__name__in=['Student']).update(institute=False)
+		messages.success(request, "Institute Feedback Started")
+		return HttpResponseRedirect('/easy-upload/settings')
+
+	else:
+		return HttpResponseRedirect('/dashboard')
+
+@login_required
 def teachers_list(request):
 	"""
 	"""
@@ -1819,7 +1848,7 @@ def teachers_list(request):
 
 
 		template_name = "easy_upload/teachers_list.html"
-		teachers = User.objects.filter(department=request.user.department, user_type__name="Faculty")
+		teachers = User.objects.filter(department=request.user.department, user_type__name__in=["Faculty", "Hod", "Vice Principal"])
 		context = {'teachers_list': teachers}
 
 		return render(request, template_name, context)
@@ -1834,38 +1863,38 @@ def easy_upload_settings(request):
 
 	template_name = "easy_upload/settings.html"
 	if request.user.groups.filter(name='feedback_admin').exists():
-		current_process = FeedbackProcess.objects.all().order_by('-id')[0]
+		current_process = FeedbackProcess.objects.filter(p2p=False).order_by('-id')[0]
+		current_process_p2p = FeedbackProcess.objects.filter(p2p=True).order_by('-id')[0]
 		
 		context = {
 				"settings":True,
 				"current_process":current_process,
+				"current_process_p2p":current_process_p2p,
 				"form": FeedbackProcessForm(),
 		}
 
 		if request.method == 'POST':
 			form = FeedbackProcessForm(request.POST)
 			if form.is_valid():
-				# Generate consolidated report for the last time
-				data = User.objects.filter(user_type__name="Faculty")
-
-				for teacher in data:
-					try:
-						r = requests.get(
-							"https://feedback360.bmsit.ac.in/__/__/--/__/__sreports/%s/" % (teacher.username)
-						)
-						count += 1
-					except:
-						pass
-
-				# Deleting all answers
-				StudentAnswer.objects.all().delete()
 
 				# Creating new process
 				process = form.save()
 				title = form.cleaned_data['title']
-				current_process = FeedbackProcess.objects.all().order_by('-id')[0]
+				p2p = form.cleaned_data['p2p']
+				current_process = FeedbackProcess.objects.filter(p2p=False).order_by('-id')[0]
+				current_process_p2p = FeedbackProcess.objects.filter(p2p=True).order_by('-id')[0]
 				context['current_process'] = current_process
-				messages.success(request, "All student answers deleted and a new process '%s' Started" %(title))
+				context['current_process_p2p'] = current_process_p2p
+
+				# Deleting all answers
+				if not p2p:
+					StudentAnswer.objects.all().delete()
+					messages.success(request, "All student answers deleted and a new process '%s' Started" %(title))
+				else:
+					Answer.objects.all().delete()
+					messages.success(request, "All P2P answers deleted and a new process '%s' Started" %(title))
+				
+				
 			return render(request, template_name, context)
 		else:
 			return render(request, template_name, context)

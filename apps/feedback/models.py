@@ -120,15 +120,13 @@ class ConsolidatedReport(models.Model):
 	The consolidated report is stored in this table.
 	"""
 
-    name = models.CharField("Name of faculty", max_length=100)
+    teacher = models.ForeignKey("general.User", null=True, blank=True)
     form_name = models.CharField("Name of the form", max_length=100)
     total = models.CharField("Total value they got", max_length=10)
-    department = models.CharField(
-        "Department Code", max_length=30, null=True, blank=True
-    )
+    process = models.ForeignKey("FeedbackProcess", null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.form_name
 
 
 class StudentConsolidatedReport(models.Model):
@@ -136,18 +134,24 @@ class StudentConsolidatedReport(models.Model):
 	The Student consolidated report is stored in this table.
 	"""
 
-    name = models.CharField("Name of faculty", max_length=100)
-    total = models.FloatField("Total value they got", max_length=10)
-    department = models.CharField(
-        "Department Code", max_length=30, null=True, blank=True
+    teacher = models.ForeignKey("general.User", null=True, blank=True)
+    total = models.FloatField("Total value they got", max_length=10, null=True, blank=True)
+    department = models.ForeignKey("general.Department", null=True, blank=True)
+
+    subject = models.CharField("Student's subject", max_length=256, null=True, blank=True)
+    sem = models.IntegerField("Student's Semester", max_length=10, null=True, blank=True)
+    sec = models.CharField("Student's Section", max_length=50, null=True, blank=True)
+    batch = models.CharField("Student's Batch", max_length=50, null=True, blank=True)
+    sub_batch = models.CharField(
+        "Student's sub batch", max_length=50, null=True, blank=True
     )
-    teacher = models.ForeignKey("general.teaches", null=True)
+    ug = models.BooleanField(default=False)
     count = models.IntegerField("No. of students",null=True, blank=True)
     date_created = models.DateField(auto_now_add=True, blank=True)
     process = models.ForeignKey("FeedbackProcess", null=True, blank=True)
 
     def __str__(self):
-        return self.name + " | "+self.teacher.subject.name + " [" + str(self.count) + "]"
+        return self.teacher.first_name + " | "+self.subject + " [" + str(self.count) + "]"
 
 def current_years():
     return date.today().year
@@ -160,6 +164,7 @@ class FeedbackProcess(models.Model):
 
     title = models.CharField("Feedback Title", max_length=250)
     date = models.DateField("Date", auto_now_add=True, blank=True, null=True)
+    p2p = models.BooleanField("Peer to peer", default=False)
 
     def __str__(self):
         return self.title

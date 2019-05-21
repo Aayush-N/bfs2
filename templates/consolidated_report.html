@@ -21,118 +21,109 @@ limitations under the License.
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
 
-    <title>Feedback Report</title>
+    <title>Peer to Peer Feedback Report</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="//d3js.org/d3.v4.0.0-alpha.4.min.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto:700" rel="stylesheet">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="{% static 'js/jspdf.min.js' %}"></script>
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <style>
-    body {
-        font-family: 'Roboto', sans-serif;
-    }
-    .red {
-        color: red;
-        font-weight: bold;
-    }
-table {
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-    height: 80%;
-    font-size: 1.5em;
-}
-
-td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-    height: 20%;
-}
-tr:nth-child(odd) {
-    background-color: #cedffc;
-}
-th {
-    background-color: #0843a8;
-    color: #fff;
-    text-align: center;
-}
-table, th, td {
-    border: 2px solid black;
-    border-collapse: collapse
-}
-#myDiv {
-    width: 50%;
-}
-#resize {
-    width:10%;
-    height: auto;
-}
-
-@media all {
-    .page-break { display: none; }
-}
-
-@media print {
-    .page-break { display: block; page-break-before: always; }
-    body {
-        width: 8.3 !important;
-        height: 11.7 !important;
-    }
-}
-</style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .red {
+            color: red;
+            font-weight: bold;
+        }
+        thead{  
+            background-color: #1c0565;
+            color: #91a6ba;
+        }
+        .pagebreak { 
+            page-break-before: always;
+        }
+        .line{
+            width: 100%;
+            height: 1px;
+            border-bottom: 2px dashed #ddd;
+            margin: 40px 0; 
+        }
+        @media print
+        {    
+            .no-print, .no-print *
+            {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 <body>
     <!--Sample: http://localhost:8000/report/F_CS_15/5A/T-->
     <div id="dvContainer" class="col-md-12">
-    <img class="col-md-4" id="resize" src="https://bmsit.ac.in/assets/logo-167a1e45069e8f279b09630a9bff0d35e6cba7f016a24651e39a40dc422e9dc1.png"/>
-    <br><br>
-    <p style="float: right;" class="pull-right">Powered by DevX Labs</p>
-    <center>
-    	<font color="#1c0565" size="5">BMS INSTITUTE OF TECHNOLOGY AND MANAGEMENT</font><br><font size="4" color="#1c0565">BENGALURU-64</font></center><br>
-    	<b>
-    		<center>
-    		<p>
-    			<font size="3" face="arial">Faculty Feedback on <span id="time"></span> (Odd Semester 2018-19)</font>
-    		</p>
-    	</b>
-    </center>
-    {% for i in type %}
-        {% if i.name == 'Principal' %}
-            <table>
-            <tr>
-                <th>Name</th>
-                <th>Department</th>
-                <th>Form</th>
-                <th>Total %</th>
-            </tr>
-            {% for rep in report %}
-            <tr>
-                <td><center>{{rep.name}}</center></td>
-                <td>{{rep.department}}</td>
-                <td><center>{{rep.form_name}}</center></td>
-                <td><center>{{rep.total}}</center></td>
-            </tr>
-            {% endfor %}                
+        <div class="row mt-3">
+            <div class="col-md-2 mt-3 text-center">
+                <img src="https://bmsit.ac.in/assets/logo-167a1e45069e8f279b09630a9bff0d35e6cba7f016a24651e39a40dc422e9dc1.png"/ style="width: 100px;">
+            </div>
 
+            <div class="col-md-8 text-center mt-3">
+                <font color="#1c0565" size="5">BMS INSTITUTE OF TECHNOLOGY AND MANAGEMENT</font><br>
+                <font size="4" color="#1c0565">BENGALURU-64</font>
+                <h4><strong><font size="4" face="arial">{{process.title}}<span id="time"> ({{process.date|date:"F, o"}})</span></font></strong></h4>
+                <h6><font size="3" face="arial"><span><strong>Total No. of faculty: {{ count }} </strong></span></font></h6>
+            </div>
+
+            <div class="col-md-2 row justify-content-center mt-2 text-center">
+                <span class="col-lg-9" style="font-size: 10px; font-family: arial;">Powered by</span>
+                <img src="https://devxlabs.co/img/logo.png" class="col-lg-8" style="width: 130px; height: 130px;">
+                <!--a href="/logout" class="btn btn-primary col-lg-6">Logout</a></div-->
+            </div>
+        </div>
+        <hr>
+        <div class="table-responsive my-4">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Form</th>
+                        <th>Total %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rep in report %}
+                        <tr>
+                            <td>{{rep.teacher.first_name}}</td>
+                            <td>{{rep.teacher.department}}</td>
+                            <td>{{rep.form_name}}</td>
+                            <td>{{rep.total}}</td>
+                        </tr>
+                    {% endfor %} 
+                </tbody>               
             </table>
-        {% endif %}
-    {% endfor %}
+        </div>
 
-<p class="text-center" style="font-size: 150%">To save as PDF, press <b>control+P and choose the option to save as PDF</b> in Chrome browser only.</p>
-<div class="col-md-6 text-center pull-right" style="padding: 3%;"> 
-    <a id="singlebutton" name="singlebutton" style="font-size: 125%; padding:2%; border-radius:0;" href="https://goo.gl/forms/CWMAGVBbEAwOEABF2" target="_blank"class="btn btn-success">Suggestions?</a> 
-</div>
-<div class="col-md-6 text-center pull-left" style="padding: 3%;"> 
-    <a id="singlebutton" name="singlebutton" style="font-size: 125%; padding:2%; border-radius:0;" href="https://goo.gl/forms/sMvlrh6OgQjW26T33" target="_blank"class="btn btn-success">Help</a> 
-</div>
-<div class="col-md-12 text-center" style="padding-bottom: 7%; font-size: 125%; border-radius:0;">
-</div>
+        <div class="row justify-content-center text-center no-print">
+            <div>
+                <p class="text-center" style="font-size: 150%">To save as PDF, press <b>control+P and choose the option to save as PDF</b> in Chrome browser only.</p>
+            </div>
+            <div class="col-md-5 text-center pull-right" style="padding: 3%;">
+                <a style="color: white; border-radius:5px;" href="https://goo.gl/forms/CWMAGVBbEAwOEABF2" target="_blank" class="btn btn-success">
+                    Suggestions?
+                </a>
+            </div>
+            <div class="col-md-5 text-center pull-left" style="padding: 3%;">
+                <a class="btn btn-success" style="color: white; border-radius:5px;" href="https://goo.gl/forms/sMvlrh6OgQjW26T33" target="_blank">
+                    Help
+                </a>
+            </div>
+            <div class="col-md-12 text-center" style="padding-bottom: 7%; font-size: 125%; border-radius:0;">
+            </div>
+        </div>
     <script>
         var today = new Date();
 var dd = today.getDate();

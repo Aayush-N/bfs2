@@ -52,17 +52,32 @@
         <div class="m-1 col-lg-8">
           {% render_field form.title required="required" class="from-control" style="border-radius: 5px;" placeholder="Process Name"%}
         </div>
-        <div class="m-1 col-lg-2" style="color: #C71585;">
+        <div class="m-1 col-lg-2" style="color: #C71585; font-size: 12px;">
           Current process:
         </div>
-        <div class="m-1 col-lg-6">
+        <div class="m-1 col-lg-8" style="font-size: 12px;">
           {{current_process}}
+        </div>
+        <div class="m-1 col-lg-2" style="color: #C71585; font-size: 12px;">
+          Current P2P process:
+        </div>
+        <div class="m-1 col-lg-8" style="font-size: 12px;">
+          {{current_process_p2p}}
+        </div>
+        <div class="m-1 col-lg-2" style="color: #C71585;">
+          Peer to Peer: 
+        </div>
+        <div class="col-lg-6">
+          <label class="switch">
+            {% render_field form.p2p class="from-control" style="border-radius: 5px;" placeholder="Process Name"%}
+            <span class="slider round"></span>
+          </label>
         </div>
         <div class="m-1 col-lg-12">
           <p>Please note that starting a new process will completely erase all answers so it's advised to take a backup before doing this.</p>
         </div>
         <div class="col-lg-12">
-          <input type="submit" class="btn m-1" value="start">
+          <input type="submit" class="btn m-1" value="start" style="color: #fafafa; background-color: #C71585;">
         </div>
       </div>
     </form>
@@ -78,6 +93,15 @@
     </a>
   </div>
 {% endif %}
+<div class="line"></div>
+
+<h4>Institute Process</h4>
+<p>This will make institute boolean false for all the students in turn making institute feedback appear for each student.</p>
+<div class="row col-lg-3">
+  <a href="{% url 'institute_start' %}" class="button p-2">
+    Start Institute Process
+  </a>
+</div>
 <div class="line"></div>
 
 {% endblock %}

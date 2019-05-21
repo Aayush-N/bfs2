@@ -86,45 +86,47 @@ limitations under the License.
         <hr>
         {% for key, value in dept.items %}
 
-            <div class="text-center my-3" style="margin-top: 5px;">
-                <h4><span class="faculty_dept"> {{value.0}} </span></h4>
-                <h6><span class="faculty_dept">No. of Faculty : {{value.1}} </span></h6>
-            </div>
-            <div class="table-responsive my-4">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Subject</th>
-                            <th>No. of Students</th>
-                            <th>Semester</th>
-                            <th>Section</th>
-                            <th>Batch</th>
-                            <th>Sub Batch</th>
-                            <th>Teaching Department</th>
-                            <th>Total %</th>
-                        </tr>
-                    </thead>
-                    {% for rep in report %}
-                        {% if key == rep.department %}
+            {% if value > 0 %}
+                <div class="text-center my-3" style="margin-top: 5px;">
+                    <h4><span class="faculty_dept"> {{key.full_name}} </span></h4>
+                    <h6><span class="faculty_dept">No. of Faculty : {{value}} </span></h6>
+                </div>
+                <div class="table-responsive my-4">
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
-                                <td><span style="font-size:0.8em;">{{rep.name|title}}</span></td>
-                                <td><span style="font-size:0.8em;">{{rep.teacher.subject.name}}</span></td>
-                                <td><span style="font-size:0.8em;">{{rep.count}}</span></td>
-                                <td><span style="font-size:0.8em;">{{rep.teacher.sem.sem}}</span></td>
-                                <td><span style="font-size:0.8em; text-transform: uppercase;">{{rep.teacher.sec}}</span></td>
-                                <td><span style="font-size:0.8em; text-transform: uppercase;">{% if rep.teacher.batch != None %}{{rep.teacher.batch}}{% else %} - {% endif %}</span></td>
-                                <td><span style="font-size:0.8em; text-transform: uppercase;">{% if rep.teacher.sub_batch != None %}{{rep.teacher.sub_batch}}{% else %} - {% endif %}</span></td>
-                                <td><span style="font-size:0.8em;">{{rep.teacher.department}}{% if rep.teacher.ug %} (UG){% else %} (PG){% endif %}</span></td>
-                                <td><span style="color:{% if rep.total < 60.0 %}#ff084a{% else %}green{% endif %}; font-size:0.8em;">{{rep.total}}</span></td>
+                                <th>Name</th>
+                                <th>Subject</th>
+                                <th>No. of Students</th>
+                                <th>Semester</th>
+                                <th>Section</th>
+                                <th>Batch</th>
+                                <th>Sub Batch</th>
+                                <th>Teaching Department</th>
+                                <th>Total %</th>
                             </tr>
-                        {% endif %}
-                    {% endfor %}
+                        </thead>
+                        {% for rep in report %}
+                            {% if key == rep.department %}
+                                <tr>
+                                    <td><span style="font-size:0.8em;">{{rep.teacher.first_name|title}}</span></td>
+                                    <td><span style="font-size:0.8em;">{{rep.subject}}</span></td>
+                                    <td><span style="font-size:0.8em;">{{rep.count}}</span></td>
+                                    <td><span style="font-size:0.8em;">{{rep.sem}}</span></td>
+                                    <td><span style="font-size:0.8em; text-transform: uppercase;">{{rep.sec}}</span></td>
+                                    <td><span style="font-size:0.8em; text-transform: uppercase;">{% if rep.batch != None %}{{rep.batch}}{% else %} - {% endif %}</span></td>
+                                    <td><span style="font-size:0.8em; text-transform: uppercase;">{% if rep.sub_batch != None %}{{rep.sub_batch}}{% else %} - {% endif %}</span></td>
+                                    <td><span style="font-size:0.8em;">{{rep.department.name}}{% if rep.ug %} (UG){% else %} (PG){% endif %}</span></td>
+                                    <td><span style="color:{% if rep.total < 60.0 %}#ff084a{% else %}green{% endif %}; font-size:0.8em;">{{rep.total}}</span></td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
 
-                </table>
-            </div>
-            <div class="line no-print"></div>
-            <div class="pagebreak"> </div>
+                    </table>
+                </div>
+                <div class="line no-print"></div>
+                <div class="pagebreak"> </div>
+            {% endif %}
             <br>
 
         {% endfor %}

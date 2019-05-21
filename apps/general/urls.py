@@ -31,6 +31,7 @@ urlpatterns = [
     url(r"^progress/", views.show_message_sent_view, name="show_message_sent_view"),
     url(r"^ping-report/$", views.ping_url, name="ping_url"),
     url(r"^test-mode", views.test_mode, name="test_mode"),
+    url(r"^institute-start", views.start_institute_feedback, name="institute_start"),
     # Easy Upload URLs
     url(r"^easy-upload/home", views.easy_upload, name="easy_upload"),
     url(r"^easy-upload/subject", views.easy_upload_subject, name="easy_upload_subject"),

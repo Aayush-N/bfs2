@@ -84,9 +84,9 @@ table, th, td {
 	            <div class="col-md-8 text-center mt-3">
 	                <font color="#1c0565" size="5">BMS INSTITUTE OF TECHNOLOGY AND MANAGEMENT</font><br>
 	                <font size="4" color="#1c0565">BENGALURU-64</font>
-	                <h4><strong><font size="4" face="arial">{{process.title}}<span id="time"> ({{process.date|date:"F, o"}})</span></font></strong></h4>
+	                <h4><strong><font size="4" face="arial">{{process.title}}<span> ({{process.date|date:"F, o"}})</span></font></strong></h4>
 	                <h6><font size="3" face="arial"><strong>Faculty: {{user.first_name|title}}</strong></font></h6>
-	                <h6><font size="3" face="arial"><strong>Department: {{user.department}}</strong></font></h6>
+	                <h6><font size="3" face="arial"><strong>Department: {{user.department.full_name}}</strong></font></h6>
 	            </div>
 
 	            <div class="col-md-2 row justify-content-center mt-2 text-center">

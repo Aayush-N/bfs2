@@ -13,6 +13,7 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
 	<!-- Our Custom CSS -->
 	<link rel="stylesheet" href="{% static 'css/style2.css' %}">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.js"></script>
 	<!-- Scrollbar Custom CSS -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
 
@@ -173,6 +174,65 @@
 			background: #cc2c91 !important;
 			color: #fff !important;
 		}
+
+		.switch {
+		  position: relative;
+		  display: inline-block;
+		  width: 50px;
+		  height: 30px;
+		}
+
+		.switch input { 
+		  opacity: 0;
+		  width: 0;
+		  height: 0;
+		}
+
+		.slider {
+		  position: absolute;
+		  cursor: pointer;
+		  top: 0;
+		  left: 0;
+		  right: 0;
+		  bottom: 0;
+		  background-color: #ccc;
+		  -webkit-transition: .4s;
+		  transition: .4s;
+		}
+
+		.slider:before {
+		  position: absolute;
+		  content: "";
+		  height: 24px;
+		  width: 24px;
+		  left: 3px;
+		  bottom: 3px;
+		  background-color: white;
+		  -webkit-transition: .4s;
+		  transition: .4s;
+		}
+
+		input:checked + .slider {
+		  background-color: #C71585;
+		}
+
+		input:focus + .slider {
+		  box-shadow: 0 0 1px #C71585;
+		}
+
+		input:checked + .slider:before {
+		  -webkit-transform: translateX(21px);
+		  -ms-transform: translateX(21px);
+		  transform: translateX(21px);
+		}
+
+		/* Rounded sliders */
+		.slider.round {
+		  border-radius: 34px;
+		}
+
+		.slider.round:before {
+		  border-radius: 50%;
 
 		/* ---------------------------------------------------
 			CONTENT STYLE
@@ -394,6 +454,96 @@
 			document.querySelector("#file-name").textContent = "⇪  "+this.files[0].name;
 		  }
 		</script>
+		<script type="text/javascript">
+	               /**
+	        * jQuery scroroller Plugin 1.0
+	        *
+	        * http://www.tinywall.net/
+	        * 
+	        * Developers: Arun David, Boobalan
+	        * Copyright (c) 2014 
+	        */
+	        (function($){
+	            $(window).on("load",function(){
+	                $(document).scrollzipInit();
+	                $(document).rollerInit();
+	            });
+	            $(window).on("load scroll resize", function(){
+	                $('.numscroller').scrollzip({
+	                    showFunction    :   function() {
+	                                            numberRoller($(this).attr('data-slno'));
+	                                        },
+	                    wholeVisible    :     false,
+	                });
+	            });
+	            $.fn.scrollzipInit=function(){
+	                $('body').prepend("<div style='position:fixed;top:0px;left:0px;width:0;height:0;' id='scrollzipPoint'></div>" );
+	            };
+	            $.fn.rollerInit=function(){
+	                var i=0;
+	                $('.numscroller').each(function() {
+	                    i++;
+	                   $(this).attr('data-slno',i); 
+	                   $(this).addClass("roller-title-number-"+i);
+	                });        
+	            };
+	            $.fn.scrollzip = function(options){
+	                var settings = $.extend({
+	                    showFunction    : null,
+	                    hideFunction    : null,
+	                    showShift       : 0,
+	                    wholeVisible    : false,
+	                    hideShift       : 0,
+	                }, options);
+	                return this.each(function(i,obj){
+	                    $(this).addClass('scrollzip');
+	                    if ( $.isFunction( settings.showFunction ) ){
+	                        if(
+	                            !$(this).hasClass('isShown')&&
+	                            ($(window).outerHeight()+$('#scrollzipPoint').offset().top-settings.showShift)>($(this).offset().top+((settings.wholeVisible)?$(this).outerHeight():0))&&
+	                            ($('#scrollzipPoint').offset().top+((settings.wholeVisible)?$(this).outerHeight():0))<($(this).outerHeight()+$(this).offset().top-settings.showShift)
+	                        ){
+	                            $(this).addClass('isShown');
+	                            settings.showFunction.call( this );
+	                        }
+	                    }
+	                    if ( $.isFunction( settings.hideFunction ) ){
+	                        if(
+	                            $(this).hasClass('isShown')&&
+	                            (($(window).outerHeight()+$('#scrollzipPoint').offset().top-settings.hideShift)<($(this).offset().top+((settings.wholeVisible)?$(this).outerHeight():0))||
+	                            ($('#scrollzipPoint').offset().top+((settings.wholeVisible)?$(this).outerHeight():0))>($(this).outerHeight()+$(this).offset().top-settings.hideShift))
+	                        ){
+	                            $(this).removeClass('isShown');
+	                            settings.hideFunction.call( this );
+	                        }
+	                    }
+	                    return this;
+	                });
+	            };
+	            function numberRoller(slno){
+	                    var min=$('.roller-title-number-'+slno).attr('data-min');
+	                    var max=$('.roller-title-number-'+slno).attr('data-max');
+	                    var timediff=$('.roller-title-number-'+slno).attr('data-delay');
+	                    var increment=$('.roller-title-number-'+slno).attr('data-increment');
+	                    var numdiff=max-min;
+	                    var timeout=(timediff*1000)/numdiff;
+	                    //if(numinc<10){
+	                        //increment=Math.floor((timediff*1000)/10);
+	                    //}//alert(increment);
+	                    numberRoll(slno,min,max,increment,timeout);
+	                    
+	            }
+	            function numberRoll(slno,min,max,increment,timeout){//alert(slno+"="+min+"="+max+"="+increment+"="+timeout);
+	                if(min<=max){
+	                    $('.roller-title-number-'+slno).html(min);
+	                    min=parseInt(min)+parseInt(increment);
+	                    setTimeout(function(){numberRoll(eval(slno),eval(min),eval(max),eval(increment),eval(timeout))},timeout);
+	                }else{
+	                    $('.roller-title-number-'+slno).html(max);
+	                }
+	            }
+	        })(jQuery);
+	   </script>
 	</body>
 
 	</html>

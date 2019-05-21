@@ -26,7 +26,8 @@ class Department(models.Model):
         ('non-teaching', 'non-teaching'),
         )
 
-    name = models.CharField("Name", max_length=250, help_text="Name of the department")
+    name = models.CharField("Name", max_length=250, help_text="Short name of the department")
+    full_name = models.CharField("Name", max_length=250, help_text="Name of the department", null=True, blank=True)
     d_type = models.CharField(choices=DEPT, default='teaching', max_length=15)
     test_mode = models.BooleanField("Test Mode", default=False, help_text='This is used to test the data uploaded.')
 
