@@ -25,9 +25,9 @@
 		  animation:blinkingText 0.8s infinite;
 		}
 		@keyframes blinkingText{
-		  0%{   color: #ff0000; }
+		  0%{   color: #6d7fcc; }
 		  50%{  color: transparent; }\
-		  100%{ color: #ff0000; }
+		  100%{ color: #6d7fcc; }
 		}
 		/*
 			DEMO STYLE
@@ -93,7 +93,7 @@
 			left: 0;
 			height: 100vh;
 			z-index: 999;
-			background: #C71585;
+			background: #6d7fcc;
 			color: #fff;
 			transition: all 0.3s;
 		}
@@ -104,12 +104,12 @@
 
 		#sidebar .sidebar-header {
 			padding: 20px;
-			background: #cc2c91;
+			background: #6d7fcc;
 		}
 
 		#sidebar ul.components {
 			padding: 20px 0;
-			border-bottom: 1px solid #F64A8A;
+			border-bottom: 1px solid #6d7fcc;
 		}
 
 		#sidebar ul p {
@@ -124,14 +124,14 @@
 		}
 
 		#sidebar ul li a:hover {
-			color: #C71585;
+			color: #6d7fcc;
 			background: #fff;
 		}
 
 		#sidebar ul li.active>a,
 		a[aria-expanded="true"] {
 			color: #fff;
-			background: #cc2c91;
+			background: #6d7fcc;
 		}
 
 		a[data-toggle="collapse"] {
@@ -149,7 +149,7 @@
 		ul ul a {
 			font-size: 0.9em !important;
 			padding-left: 30px !important;
-			background: #cc2c91;
+			background: #6d7fcc;
 		}
 
 		ul.CTAs {
@@ -166,73 +166,14 @@
 
 		a.download {
 			background: #fff;
-			color: #C71585;
+			color: #6d7fcc;
 		}
 
 		a.article,
 		a.article:hover {
-			background: #cc2c91 !important;
+			background: #6d7fcc !important;
 			color: #fff !important;
 		}
-
-		.switch {
-		  position: relative;
-		  display: inline-block;
-		  width: 50px;
-		  height: 30px;
-		}
-
-		.switch input { 
-		  opacity: 0;
-		  width: 0;
-		  height: 0;
-		}
-
-		.slider {
-		  position: absolute;
-		  cursor: pointer;
-		  top: 0;
-		  left: 0;
-		  right: 0;
-		  bottom: 0;
-		  background-color: #ccc;
-		  -webkit-transition: .4s;
-		  transition: .4s;
-		}
-
-		.slider:before {
-		  position: absolute;
-		  content: "";
-		  height: 24px;
-		  width: 24px;
-		  left: 3px;
-		  bottom: 3px;
-		  background-color: white;
-		  -webkit-transition: .4s;
-		  transition: .4s;
-		}
-
-		input:checked + .slider {
-		  background-color: #C71585;
-		}
-
-		input:focus + .slider {
-		  box-shadow: 0 0 1px #C71585;
-		}
-
-		input:checked + .slider:before {
-		  -webkit-transform: translateX(21px);
-		  -ms-transform: translateX(21px);
-		  transform: translateX(21px);
-		}
-
-		/* Rounded sliders */
-		.slider.round {
-		  border-radius: 34px;
-		}
-
-		.slider.round:before {
-		  border-radius: 50%;
 
 		/* ---------------------------------------------------
 			CONTENT STYLE
@@ -260,9 +201,9 @@
 
 		.button {
 		  /* border: 0.2px solid gray; */
-		  border: 1px solid #f64a8a;
+		  border: 1px solid #6d7fcc;
 		  color: #fafafa;
-		  background-color: #f64a8a;
+		  background-color: #6d7fcc;
 		  padding: 3px 4px;
 		  font-size: 15px;
 		  font-weight: bold;
@@ -290,15 +231,15 @@
 
 		.arrow{
 		  font-size: 25px;
-		  color: #ff0800;
+		  color: #6d7fcc;
 		}
 
 		a:hover{
-		  color: #ff0800;
+		  color: #6d7fcc;
 		}
 
 		small{
-		  color: #cc0066;
+		  color: #6d7fcc;
 		}
 
 		ul {
@@ -311,7 +252,7 @@
 
 		thead{
 		  color: white;
-		  background-color: #cc0066;
+		  background-color: #6d7fcc;
 		}
 
 		/* ---------------------------------------------------
@@ -405,7 +346,7 @@
 			<nav class="navbar navbar-expand-lg navbar-light bg-light">
 				<div class="container-fluid">
 
-					<button type="button" id="sidebarCollapse" class="btn btn-info" style="background-color: #f64a8a; border-color: #f64a8a;">
+					<button type="button" id="sidebarCollapse" class="btn btn-info" style="background-color: #6d7fcc; border-color: #6d7fcc;">
 						<i class="fas fa-align-left"></i>
 						<span>Menu</span>
 					</button>
@@ -455,95 +396,95 @@
 		  }
 		</script>
 		<script type="text/javascript">
-	               /**
-	        * jQuery scroroller Plugin 1.0
-	        *
-	        * http://www.tinywall.net/
-	        * 
-	        * Developers: Arun David, Boobalan
-	        * Copyright (c) 2014 
-	        */
-	        (function($){
-	            $(window).on("load",function(){
-	                $(document).scrollzipInit();
-	                $(document).rollerInit();
-	            });
-	            $(window).on("load scroll resize", function(){
-	                $('.numscroller').scrollzip({
-	                    showFunction    :   function() {
-	                                            numberRoller($(this).attr('data-slno'));
-	                                        },
-	                    wholeVisible    :     false,
-	                });
-	            });
-	            $.fn.scrollzipInit=function(){
-	                $('body').prepend("<div style='position:fixed;top:0px;left:0px;width:0;height:0;' id='scrollzipPoint'></div>" );
-	            };
-	            $.fn.rollerInit=function(){
-	                var i=0;
-	                $('.numscroller').each(function() {
-	                    i++;
-	                   $(this).attr('data-slno',i); 
-	                   $(this).addClass("roller-title-number-"+i);
-	                });        
-	            };
-	            $.fn.scrollzip = function(options){
-	                var settings = $.extend({
-	                    showFunction    : null,
-	                    hideFunction    : null,
-	                    showShift       : 0,
-	                    wholeVisible    : false,
-	                    hideShift       : 0,
-	                }, options);
-	                return this.each(function(i,obj){
-	                    $(this).addClass('scrollzip');
-	                    if ( $.isFunction( settings.showFunction ) ){
-	                        if(
-	                            !$(this).hasClass('isShown')&&
-	                            ($(window).outerHeight()+$('#scrollzipPoint').offset().top-settings.showShift)>($(this).offset().top+((settings.wholeVisible)?$(this).outerHeight():0))&&
-	                            ($('#scrollzipPoint').offset().top+((settings.wholeVisible)?$(this).outerHeight():0))<($(this).outerHeight()+$(this).offset().top-settings.showShift)
-	                        ){
-	                            $(this).addClass('isShown');
-	                            settings.showFunction.call( this );
-	                        }
-	                    }
-	                    if ( $.isFunction( settings.hideFunction ) ){
-	                        if(
-	                            $(this).hasClass('isShown')&&
-	                            (($(window).outerHeight()+$('#scrollzipPoint').offset().top-settings.hideShift)<($(this).offset().top+((settings.wholeVisible)?$(this).outerHeight():0))||
-	                            ($('#scrollzipPoint').offset().top+((settings.wholeVisible)?$(this).outerHeight():0))>($(this).outerHeight()+$(this).offset().top-settings.hideShift))
-	                        ){
-	                            $(this).removeClass('isShown');
-	                            settings.hideFunction.call( this );
-	                        }
-	                    }
-	                    return this;
-	                });
-	            };
-	            function numberRoller(slno){
-	                    var min=$('.roller-title-number-'+slno).attr('data-min');
-	                    var max=$('.roller-title-number-'+slno).attr('data-max');
-	                    var timediff=$('.roller-title-number-'+slno).attr('data-delay');
-	                    var increment=$('.roller-title-number-'+slno).attr('data-increment');
-	                    var numdiff=max-min;
-	                    var timeout=(timediff*1000)/numdiff;
-	                    //if(numinc<10){
-	                        //increment=Math.floor((timediff*1000)/10);
-	                    //}//alert(increment);
-	                    numberRoll(slno,min,max,increment,timeout);
-	                    
-	            }
-	            function numberRoll(slno,min,max,increment,timeout){//alert(slno+"="+min+"="+max+"="+increment+"="+timeout);
-	                if(min<=max){
-	                    $('.roller-title-number-'+slno).html(min);
-	                    min=parseInt(min)+parseInt(increment);
-	                    setTimeout(function(){numberRoll(eval(slno),eval(min),eval(max),eval(increment),eval(timeout))},timeout);
-	                }else{
-	                    $('.roller-title-number-'+slno).html(max);
-	                }
-	            }
-	        })(jQuery);
-	   </script>
+               /**
+        * jQuery scroroller Plugin 1.0
+        *
+        * http://www.tinywall.net/
+        * 
+        * Developers: Arun David, Boobalan
+        * Copyright (c) 2014 
+        */
+        (function($){
+            $(window).on("load",function(){
+                $(document).scrollzipInit();
+                $(document).rollerInit();
+            });
+            $(window).on("load scroll resize", function(){
+                $('.numscroller').scrollzip({
+                    showFunction    :   function() {
+                                            numberRoller($(this).attr('data-slno'));
+                                        },
+                    wholeVisible    :     false,
+                });
+            });
+            $.fn.scrollzipInit=function(){
+                $('body').prepend("<div style='position:fixed;top:0px;left:0px;width:0;height:0;' id='scrollzipPoint'></div>" );
+            };
+            $.fn.rollerInit=function(){
+                var i=0;
+                $('.numscroller').each(function() {
+                    i++;
+                   $(this).attr('data-slno',i); 
+                   $(this).addClass("roller-title-number-"+i);
+                });        
+            };
+            $.fn.scrollzip = function(options){
+                var settings = $.extend({
+                    showFunction    : null,
+                    hideFunction    : null,
+                    showShift       : 0,
+                    wholeVisible    : false,
+                    hideShift       : 0,
+                }, options);
+                return this.each(function(i,obj){
+                    $(this).addClass('scrollzip');
+                    if ( $.isFunction( settings.showFunction ) ){
+                        if(
+                            !$(this).hasClass('isShown')&&
+                            ($(window).outerHeight()+$('#scrollzipPoint').offset().top-settings.showShift)>($(this).offset().top+((settings.wholeVisible)?$(this).outerHeight():0))&&
+                            ($('#scrollzipPoint').offset().top+((settings.wholeVisible)?$(this).outerHeight():0))<($(this).outerHeight()+$(this).offset().top-settings.showShift)
+                        ){
+                            $(this).addClass('isShown');
+                            settings.showFunction.call( this );
+                        }
+                    }
+                    if ( $.isFunction( settings.hideFunction ) ){
+                        if(
+                            $(this).hasClass('isShown')&&
+                            (($(window).outerHeight()+$('#scrollzipPoint').offset().top-settings.hideShift)<($(this).offset().top+((settings.wholeVisible)?$(this).outerHeight():0))||
+                            ($('#scrollzipPoint').offset().top+((settings.wholeVisible)?$(this).outerHeight():0))>($(this).outerHeight()+$(this).offset().top-settings.hideShift))
+                        ){
+                            $(this).removeClass('isShown');
+                            settings.hideFunction.call( this );
+                        }
+                    }
+                    return this;
+                });
+            };
+            function numberRoller(slno){
+                    var min=$('.roller-title-number-'+slno).attr('data-min');
+                    var max=$('.roller-title-number-'+slno).attr('data-max');
+                    var timediff=$('.roller-title-number-'+slno).attr('data-delay');
+                    var increment=$('.roller-title-number-'+slno).attr('data-increment');
+                    var numdiff=max-min;
+                    var timeout=(timediff*1000)/numdiff;
+                    //if(numinc<10){
+                        //increment=Math.floor((timediff*1000)/10);
+                    //}//alert(increment);
+                    numberRoll(slno,min,max,increment,timeout);
+                    
+            }
+            function numberRoll(slno,min,max,increment,timeout){//alert(slno+"="+min+"="+max+"="+increment+"="+timeout);
+                if(min<=max){
+                    $('.roller-title-number-'+slno).html(min);
+                    min=parseInt(min)+parseInt(increment);
+                    setTimeout(function(){numberRoll(eval(slno),eval(min),eval(max),eval(increment),eval(timeout))},timeout);
+                }else{
+                    $('.roller-title-number-'+slno).html(max);
+                }
+            }
+        })(jQuery);
+   </script>
 	</body>
 
 	</html>
