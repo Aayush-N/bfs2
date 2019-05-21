@@ -844,7 +844,9 @@ def student_view_consolidated(request):
 	template_name = "student_consolidated_report.html"
 
 	current_process = FeedbackProcess.objects.filter(p2p=False).order_by('-id')[0]
+	# print("process", current_process)
 	report = StudentConsolidatedReport.objects.filter(process=current_process).order_by("teacher__first_name")
+	# print("Report",report)
 	department = {}
 	total_count = 0
 	departments = Department.objects.filter(d_type='teaching')
@@ -958,6 +960,7 @@ def Test_report(request, username):
 	very_poor = 0
 	no_stu = 0
 	grand_total = 0
+	current_process = FeedbackProcess.objects.filter(p2p=False).order_by('-id')[0]
 
 	for i in data:
 		if i in teach:
@@ -1110,7 +1113,6 @@ def Test_report(request, username):
 		# print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
 		# print(no_stu)
 			if grand_total != 0:
-				current_process = FeedbackProcess.objects.all().order_by('-id')[0]
 				if not StudentConsolidatedReport.objects.filter(
 					teacher=user,
 					department=i.department,

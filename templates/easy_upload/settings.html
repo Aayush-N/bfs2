@@ -6,7 +6,7 @@
 <style type="text/css">
   a.button:hover{
     background-color: white;
-    color: #C71585;
+    color: #6d7fcc;
   }
   .switch {
       position: relative;
@@ -46,11 +46,11 @@
     }
 
     input:checked + .slider {
-      background-color: #C71585;
+      background-color: #6d7fcc;
     }
 
     input:focus + .slider {
-      box-shadow: 0 0 1px #C71585;
+      box-shadow: 0 0 1px #6d7fcc;
     }
 
     input:checked + .slider:before {
@@ -104,25 +104,25 @@
     <form class="form-group" action="/easy-upload/settings" method="post" enctype="multipart/form-data" onsubmit="return confirm('This will erase all the answers. Are you sure?');">
       {% csrf_token %}
       <div class="row">
-        <div class="m-1 col-lg-2" style="color: #C71585;">
+        <div class="m-1 col-lg-2" style="color: #6d7fcc;">
           Start new process:
         </div>
         <div class="m-1 col-lg-8">
           {% render_field form.title required="required" class="from-control" style="border-radius: 5px;" placeholder="Process Name"%}
         </div>
-        <div class="m-1 col-lg-2" style="color: #C71585; font-size: 12px;">
+        <div class="m-1 col-lg-2" style="color: #6d7fcc; font-size: 12px;">
           Current process:
         </div>
         <div class="m-1 col-lg-8" style="font-size: 12px;">
           {{current_process}}
         </div>
-        <div class="m-1 col-lg-2" style="color: #C71585; font-size: 12px;">
+        <div class="m-1 col-lg-2" style="color: #6d7fcc; font-size: 12px;">
           Current P2P process:
         </div>
         <div class="m-1 col-lg-8" style="font-size: 12px;">
           {{current_process_p2p}}
         </div>
-        <div class="m-1 col-lg-2" style="color: #C71585;">
+        <div class="m-1 col-lg-2" style="color: #6d7fcc;">
           Peer to Peer: 
         </div>
         <div class="col-lg-6">
@@ -135,7 +135,7 @@
           <p>Please note that starting a new process will completely erase all answers so it's advised to take a backup before doing this.</p>
         </div>
         <div class="col-lg-12">
-          <input type="submit" class="btn m-1" value="start" style="color: #fafafa; background-color: #C71585;">
+          <input type="submit" class="btn m-1" value="start" style="color: #fafafa; background-color: #6d7fcc;">
         </div>
       </div>
     </form>
