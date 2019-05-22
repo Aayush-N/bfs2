@@ -631,6 +631,7 @@ def sconsolidated(request, username):
 	very_poor = 0
 	no_stu = 0
 	grand_total = 0
+	current_process = FeedbackProcess.objects.filter(p2p=False).order_by('-id')[0]
 
 	for i in data:
 		if i in teach:
@@ -783,7 +784,6 @@ def sconsolidated(request, username):
 		# print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
 		# print(no_stu)
 			if grand_total != 0:
-				current_process = FeedbackProcess.objects.filter(p2p=False).order_by('-id')[0]
 				if not StudentConsolidatedReport.objects.filter(
 					teacher=user,
 					department=i.department,
@@ -829,7 +829,7 @@ def sconsolidated(request, username):
 
 	# print("________________________[]________________________")
 	# print(excellent,good,satisfactory,poor,very_poor)
-	context = {"user": user, "report": value}
+	context = {"user": user, "report": value, "process":current_process}
 	return render(request, template_name, context)
 
 
