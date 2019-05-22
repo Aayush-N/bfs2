@@ -20,7 +20,7 @@
                 </ul>
               </div>
             {% endif %}
-            <form class="form-group" action="/easy-upload/message" method="post" enctype="multipart/form-data">
+            <form class="form-group" action="{% url 'easy_upload_message' %}" method="post" enctype="multipart/form-data">
               {% csrf_token %}
               <div class="row">
                 <div class="col-lg-12">

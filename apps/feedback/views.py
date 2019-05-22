@@ -854,8 +854,17 @@ def student_view_consolidated(request):
 
 	# print("_-_-_")
 	for dept in departments:
-		department[dept] = len(StudentConsolidatedReport.objects.filter(teacher__department=dept).order_by('teacher').values('teacher').distinct())
-		total_count += department[dept]
+		department[dept] = [
+			len(StudentConsolidatedReport.objects.filter(teacher__department=dept, process=current_process).order_by('teacher').values('teacher').distinct()),
+			{
+				'≤60': len(StudentConsolidatedReport.objects.filter(teacher__department=dept, process=current_process, total__lte=60)),
+				'60-70': len(StudentConsolidatedReport.objects.filter(teacher__department=dept, process=current_process, total__gt=60, total__lte=70)),
+				'70-80': len(StudentConsolidatedReport.objects.filter(teacher__department=dept, process=current_process, total__gt=70, total__lte=80)),
+				'80-90': len(StudentConsolidatedReport.objects.filter(teacher__department=dept, process=current_process, total__gt=80, total__lte=90)),
+				'90-100': len(StudentConsolidatedReport.objects.filter(teacher__department=dept, process=current_process, total__gt=90, total__lte=100)),
+			}
+		]
+		total_count += department[dept][0]
 	# print(department)
 	# print("_-_-_")
 
@@ -873,13 +882,13 @@ def student_view_consolidated_sixty(request):
 		print(request.user.is_superuser)
 		return HttpResponseRedirect(reverse_lazy("dashboard"))
 	template_name = "student_consolidated_report_sixty.html"
-	current_process = FeedbackProcess.objects.all().order_by('-id')[0]
+	current_process = FeedbackProcess.objects.filter(p2p=False).order_by('-id')[0]
 	report = StudentConsolidatedReport.objects.filter(total__lt=60.0, process=current_process).order_by("teacher__first_name")
 	# print("_-_-_")
 	temp = []
 	for i in report:
-		if i.name not in temp:
-			temp.append(i.name)
+		if i.teacher.username not in temp:
+			temp.append(i.teacher.username)
 	count = len(temp)
 	# print("_-_-_")
 	context = {"report": report, "count": count, "process":current_process}
@@ -1610,7 +1619,7 @@ class select_report(FormView):
 
 		if str(user_type[0]).upper() == "PRINCIPAL" or user.is_superuser:
 			
-			report_list = FeedbackProcess.objects.filter(p2p=False).order_by('date')
+			report_list = FeedbackProcess.objects.filter(p2p=False).order_by('-id')
 			# Teacher.objects.order_by('fname').filter(dno__dname=dname)
 			context = {"report_list": report_list}
 			return render(request, self.template_name, context)
@@ -1635,17 +1644,26 @@ def previous_consolidated(request, id):
 		return HttpResponseRedirect(reverse_lazy("dashboard"))
 	template_name = "student_consolidated_report.html"
 
-	current_process = FeedbackProcess.objects.filter(p2p=False).order_by('-id')[0]
+	current_process = FeedbackProcess.objects.filter(id=id).order_by('-id')[0]
 	report = StudentConsolidatedReport.objects.filter(process__id=id).order_by("teacher__first_name")
 	department = {}
 	total_count = 0
-	departments = Department.objects.filter(d_type='teaching')
+	departments = Department.objects.filter(d_type='teaching').order_by('id')
 
 
 	# print("_-_-_")
 	for dept in departments:
-		department[dept] = len(StudentConsolidatedReport.objects.filter(teacher__department=dept).order_by('teacher').values('teacher').distinct())
-		total_count += department[dept]
+		department[dept] = [
+			len(StudentConsolidatedReport.objects.filter(teacher__department=dept, process__id=id).order_by('teacher').values('teacher').distinct()),
+			{
+				'≤60': len(StudentConsolidatedReport.objects.filter(teacher__department=dept, process__id=id, total__lte=60)),
+				'60-70': len(StudentConsolidatedReport.objects.filter(teacher__department=dept, process__id=id, total__gt=60, total__lte=70)),
+				'70-80': len(StudentConsolidatedReport.objects.filter(teacher__department=dept, process__id=id, total__gt=70, total__lte=80)),
+				'80-90': len(StudentConsolidatedReport.objects.filter(teacher__department=dept, process__id=id, total__gt=80, total__lte=90)),
+				'90-100': len(StudentConsolidatedReport.objects.filter(teacher__department=dept, process__id=id, total__gt=90, total__lte=100)),
+			},
+		]
+		total_count += department[dept][0]
 	# print(department)
 	# print("_-_-_")
 
@@ -1655,6 +1673,164 @@ def previous_consolidated(request, id):
 	# 	print(i.department)
 	# 	print(i.total)
 	return render(request, template_name, context)
+
+
+class select_p2p_report(FormView):
+	"""
+	After authenticated by HOD OTP, lets HOD select individual faculty
+	"""
+
+	template_name = "select_report.html"
+
+	def get(self, request, *args, **kwargs):
+		"""
+		Populates the select faculty dropdown
+		"""
+		user = self.request.user
+		username = user.username
+		user_type = user.get_user_type()
+
+		if str(user_type[0]).upper() == "PRINCIPAL" or user.is_superuser:
+			
+			report_list = FeedbackProcess.objects.filter(p2p=True).order_by('-id')
+			# Teacher.objects.order_by('fname').filter(dno__dname=dname)
+			context = {"report_list": report_list}
+			return render(request, self.template_name, context)
+		else:
+			return HttpResponseRedirect(reverse_lazy("dashboard"))
+
+	def post(self, request, *args, **kwargs):
+		"""
+		Geneartes the individual faculty report
+		"""
+		process_id = request.POST.get("process")
+		return redirect(
+			reverse_lazy("previous_p2p_reports", kwargs={"id": process_id})
+		)
+
+@login_required(login_url="/signin/")
+def previous_p2p_consolidated(request, id):
+	"""
+	This view displays the consolidated previous consolidated reports
+	"""
+	if not (request.user.is_superuser or request.user.is_principal()):
+		return HttpResponseRedirect(reverse_lazy("dashboard"))
+	template_name = "consolidated_report.html"
+
+	current_process = FeedbackProcess.objects.filter(id=id).order_by('-id')[0]
+	report = ConsolidatedReport.objects.filter(process__id=id).order_by("teacher__first_name")
+
+	context = {"report": report, "process":current_process}
+	# for i in report:
+	# 	print(i.name)
+	# 	print(i.department)
+	# 	print(i.total)
+	return render(request, template_name, context)
+
+class teacher_select_report(FormView):
+	"""
+	After authenticated by HOD OTP, lets HOD select individual faculty
+	"""
+
+	template_name = "select_report.html"
+
+	def get(self, request, *args, **kwargs):
+		"""
+		Populates the select faculty dropdown
+		"""
+		user = self.request.user
+		username = user.username
+		user_type = user.get_user_type()
+
+		if not str(user_type[0]).upper() == "PRINCIPAL":
+			
+			report_list = FeedbackProcess.objects.filter(p2p=False).order_by('-id')
+			# Teacher.objects.order_by('fname').filter(dno__dname=dname)
+			context = {"report_list": report_list}
+			return render(request, self.template_name, context)
+		else:
+			return HttpResponseRedirect(reverse_lazy("dashboard"))
+
+	def post(self, request, *args, **kwargs):
+		"""
+		Geneartes the individual faculty report
+		"""
+		process_id = request.POST.get("process")
+		return redirect(
+			reverse_lazy("teacher_previous_reports", kwargs={"id": process_id})
+		)
+
+@login_required(login_url="/signin/")
+def teacher_previous_reports(request, id):
+	"""
+	This view displays the consolidated previous consolidated reports
+	"""
+	if request.user.is_principal():
+		return HttpResponseRedirect(reverse_lazy("dashboard"))
+	template_name = "teacher_previous_report.html"
+
+	current_process = FeedbackProcess.objects.filter(id=id).order_by('-id')[0]
+	report = StudentConsolidatedReport.objects.filter(process__id=id, teacher=request.user).order_by("teacher__first_name")
+
+	context = {"report": report, "process":current_process}
+	# for i in report:
+	# 	print(i.name)
+	# 	print(i.department)
+	# 	print(i.total)
+	return render(request, template_name, context)
+
+class teacher_select_p2p_report(FormView):
+	"""
+	After authenticated by HOD OTP, lets HOD select individual faculty
+	"""
+
+	template_name = "select_report.html"
+
+	def get(self, request, *args, **kwargs):
+		"""
+		Populates the select faculty dropdown
+		"""
+		user = self.request.user
+		username = user.username
+		user_type = user.get_user_type()
+
+		if not str(user_type[0]).upper() == "PRINCIPAL":
+			
+			report_list = FeedbackProcess.objects.filter(p2p=True).order_by('-id')
+			# Teacher.objects.order_by('fname').filter(dno__dname=dname)
+			context = {"report_list": report_list}
+			return render(request, self.template_name, context)
+		else:
+			return HttpResponseRedirect(reverse_lazy("dashboard"))
+
+	def post(self, request, *args, **kwargs):
+		"""
+		Geneartes the individual faculty report
+		"""
+		process_id = request.POST.get("process")
+		return redirect(
+			reverse_lazy("teacher_previous_p2p_reports", kwargs={"id": process_id})
+		)
+
+@login_required(login_url="/signin/")
+def teacher_previous_p2p_reports(request, id):
+	"""
+	This view displays the consolidated previous consolidated reports
+	"""
+	if request.user.is_principal():
+		return HttpResponseRedirect(reverse_lazy("dashboard"))
+	template_name = "consolidated_report.html"
+
+	current_process = FeedbackProcess.objects.filter(id=id).order_by('-id')[0]
+	report = ConsolidatedReport.objects.filter(process__id=id, teacher=request.user).order_by("teacher__first_name")
+
+	context = {"report": report, "process":current_process}
+	# for i in report:
+	# 	print(i.name)
+	# 	print(i.department)
+	# 	print(i.total)
+	return render(request, template_name, context)
+
 # class consolidated_principal(FormView):
 # 	'''
 # 	Portal for the HOD to view consolidated institute feedback

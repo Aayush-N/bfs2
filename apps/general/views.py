@@ -1084,6 +1084,9 @@ def easy_upload_subject(request):
 	"""
 	template_name = "easy_upload/subject.html"
 
+	if not request.user.groups.filter(name='feedback_admin').exists():
+		return HttpResponseRedirect('/dashboard')
+
 	if request.method == 'POST':
 
 		errors = []
@@ -1208,6 +1211,9 @@ def easy_upload_teaches(request):
 	"""
 
 	template_name = "easy_upload/teaches.html"
+
+	if not request.user.groups.filter(name='feedback_admin').exists():
+		return HttpResponseRedirect('/dashboard')
 
 	if request.method == 'POST':
 
@@ -1379,6 +1385,9 @@ def easy_upload_users(request):
 	"""
 
 	template_name = "easy_upload/users.html"
+
+	if not request.user.groups.filter(name='feedback_admin').exists():
+		return HttpResponseRedirect('/dashboard')
 
 	if request.method == 'POST':
 
@@ -1679,7 +1688,7 @@ def easy_upload(request):
 	"""
 
 	template_name = "easy_upload/home.html"
-	if request.user.groups.filter(name='feedback_admin').exists():
+	if not request.user.is_student():
 
 		process = FeedbackProcess.objects.filter(p2p=False).order_by('-id')
 
@@ -1691,20 +1700,16 @@ def easy_upload(request):
 		except:
 			pass
 
-		if request.user.is_superuser:
-			departments = Department.objects.filter(d_type="teaching").exclude(name__in=['MATH', 'PHY', 'CHEM', 'HUMANITIES']).order_by('id').values('name').distinct()
-		else:
-			department = request.user.department
+		
+		departments = Department.objects.filter(d_type="teaching").exclude(name__in=['MATH', 'PHY', 'CHEM', 'HUMANITIES']).order_by('id').values('name').distinct()
+		
 		completed = {}
 		total = 0
 
-		if request.user.is_superuser:
-			for dept in departments:
+		for dept in departments:
 
-				completed[dept['name']] = User.objects.filter(department__name=dept['name'], is_active=True, user_type__name="Student", done=False).count()
-				total += completed[dept['name']]
-		else:
-			completed[department] = User.objects.filter(department__name=department, is_active=True, user_type__name="Student", done=False).count()
+			completed[dept['name']] = User.objects.filter(department__name=dept['name'], is_active=True, user_type__name="Student", done=False).count()
+			total += completed[dept['name']]
 
 		context = {
 				"home":True,
@@ -1753,6 +1758,9 @@ def easy_upload_message(request):
 	"""
 
 	template_name = "easy_upload/message.html"
+
+	if not request.user.groups.filter(name='feedback_admin').exists():
+		return HttpResponseRedirect('/dashboard')
 
 	if request.method == 'POST':
 

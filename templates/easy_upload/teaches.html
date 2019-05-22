@@ -26,8 +26,8 @@
                 <th>8768282</th>
                 <th>19CS11</th>
                 <th>1</th>
-                <th>A</th>
-                <th>A1</th>
+                <th></th>
+                <th></th>
                 <th>A</th>
                 <th>Y</th>
                 <th>60</th>
@@ -35,7 +35,7 @@
               </tr>
               <tr>
                 <th>8768283</th>
-                <th>19CS12</th>
+                <th>19CSL12</th>
                 <th>1</th>
                 <th>A</th>
                 <th>A1</th>
@@ -47,7 +47,7 @@
             </tbody>
           </table>
         </div>
-        <p>Please note that the ug field only takes 'Y' (Yes) or N (No). In teacher field the unique ID or the username should be added. Download <a href="{% static 'csv/teaches.csv' %}" style="color: #CC0166;">this csv file</a> for reference.  Contact Admin if you face any problems.</p>
+        <p>Please note that the ug field only takes 'Y' (Yes) or N (No). In teacher field the unique ID or the username should be added. Download <a href="{% static 'csv/teaches.csv' %}" style="color: #CC0166;">this csv file</a> for reference. Also, please make sure you don't add batch and subbatch to theory subjects. Contact Admin if you face any problems.</p>
 
         <div class="line"></div>
 
@@ -62,7 +62,7 @@
               </ul>
             </div>
           {% endif %}
-          <form class="form-group" action="/easy-upload/teaches" method="post" enctype="multipart/form-data">
+          <form class="form-group" action="{% url 'easy_upload_teaches' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row text-center">
               <div class="upload-btn-wrapper m-1 col-lg-12">

@@ -1,4 +1,5 @@
 {% load static %}
+{% load auth_extras %}
 <!DOCTYPE html>
 <html>
 
@@ -104,7 +105,7 @@
 
 		#sidebar .sidebar-header {
 			padding: 20px;
-			background: #6d7fcc;
+			background: #7b8bd3;
 		}
 
 		#sidebar ul.components {
@@ -124,14 +125,14 @@
 		}
 
 		#sidebar ul li a:hover {
-			color: #6d7fcc;
+			color: #;
 			background: #fff;
 		}
 
 		#sidebar ul li.active>a,
 		a[aria-expanded="true"] {
-			color: #fff;
-			background: #6d7fcc;
+			color: #6d7fcc;
+			background: #fff;
 		}
 
 		a[data-toggle="collapse"] {
@@ -171,8 +172,9 @@
 
 		a.article,
 		a.article:hover {
-			background: #6d7fcc !important;
+			background: #1d2553 !important;
 			color: #fff !important;
+			border: 1px solid #1d2553;
 		}
 
 		/* ---------------------------------------------------
@@ -287,57 +289,107 @@
 		<!-- Sidebar  -->
 		<nav id="sidebar">
 			<div class="sidebar-header">
-				<h3>Feedback Data Upload</h3>
+				<h3>Feedback Dashboard</h3>
 			</div>
 
 			<ul class="list-unstyled components">
-				<p>Welcome, {{request.user.first_name}}</p>
+				<p>Welcome, {{request.user.first_name|title}}</p>
 				<li class="{% if home %}active {% endif %}">
-					<a href="{% url "easy_upload" %}">Home</a>
+					<a href="{% url 'dashboard' %}">Home</a>
 				</li>
+				{% if request.user|has_group:"feedback_admin" %}
+					<li>
+						<a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Upload Data</a>
+						<ul class="collapse list-unstyled" id="pageSubmenu">
+							<li class="{% if subject %}active {% endif %}">
+								<a href="{% url 'easy_upload_subject' %}">Subject</a>
+							</li>
+							<li class="{% if users %}active {% endif %}">
+								<a href="{% url 'easy_upload_users' %}">Users</a>
+							</li>
+							<li class="{% if teaches %}active {% endif %}">
+								<a href="{% url 'easy_upload_teaches' %}">Teaches</a>
+							</li>
+						</ul>
+					</li>
+					<li class="{% if test %}active {% endif %}">
+						<a href="{% url 'easy_upload_test' %}">Upload Summary</a>
+					</li>
+					<li class="{% if teachers_list %}active {% endif %}">
+						<a href="{% url 'easy_upload_teacher_list' %}">Teacher's List</a>
+					</li>
+					<li class="{% if message %}active {% endif %}">
+						<a href="{% url 'easy_upload_message' %}">Send Message 
+							{% if request.user.department.test_mode %} <span style="font-size: 11px;">[Disabled]</span> {% endif %}
+						</a>
+					</li>
+					
+					{% if request.user.department.test_mode %}
+						<li class="badge">
+							Test Mode is on
+						</li>
+					{% endif %}
+				{% endif %}
+				{% if request.user.is_faculty or request.user.is_hod %}
 				<li>
-					<a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Uploads</a>
-					<ul class="collapse list-unstyled" id="pageSubmenu">
-						<li class="{% if subject %}active {% endif %}">
-							<a href="{% url "easy_upload_subject" %}">Subject</a>
+					<a href="#report" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Reports</a>
+					<ul class="collapse list-unstyled" id="report">
+						
+						<li class="">
+							<a href="{% url 'sconsolidated' username=request.user.username %}" target="_blank">Student Feedback Report</a>
 						</li>
-						<li class="{% if users %}active {% endif %}">
-							<a href="{% url "easy_upload_users" %}">Users</a>
+						<li class="">
+							<a href="{% url 'teacher_select_report' %}" target="_blank">Previous Reports (gist)</a>
 						</li>
-						<li class="{% if teaches %}active {% endif %}">
-							<a href="{% url "easy_upload_teaches" %}">Teaches</a>
+						<li class="">
+							<a href="{% url 'report' %}" target="_blank">P2P Report</a>
 						</li>
+						<li class="">
+							<a href="{% url 'teacher_select_p2p_report' %}" target="_blank">Previous P2P Reports(gist)</a>
+						</li>
+						
 					</ul>
 				</li>
-				<li class="{% if test %}active {% endif %}">
-					<a href="{% url 'easy_upload_test' %}">Upload Summary</a>
-				</li>
-				<li class="{% if teachers_list %}active {% endif %}">
-					<a href="{% url 'easy_upload_teacher_list' %}">Teacher's List</a>
-				</li>
-				<li class="{% if message %}active {% endif %}">
-					<a href="{% url 'easy_upload_message' %}">Send Message 
-						{% if request.user.department.test_mode %} <span style="font-size: 11px;">[Disabled]</span> {% endif %}
-					</a>
-				</li>
-				<li class="{% if settings %} active {% endif %}">
-					<a href="{% url 'easy_upload_settings' %}">Settings</a>
-				</li>
-				{% if request.user.department.test_mode %}
-					<li class="badge">
-						Test Mode is on
-					</li>
 				{% endif %}
-			</ul>
-
-			<ul class="list-unstyled CTAs">
+				{% if request.user.is_superuser or request.user.is_principal %}
 				<li>
-					<a href="/admin" class="download">Admin</a>
+					<a href="#consolidated-report" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Consolidated Reports</a>
+					<ul class="collapse list-unstyled" id="consolidated-report">
+						
+						<li class="">
+							<a href="{% url 'student_consolidated' %}" target="_blank">Student Feedback Report</a>
+						</li>
+						<li class="">
+							<a href="{% url 'consolidated_sixty' %}" target="_blank">Under Sixty Report</a>
+						</li>
+						<li class="">
+							<a href="{% url 'select_report' %}" target="_blank">Previous Reports</a>
+						</li>
+						<li class="">
+							<a href="{% url 'consolidated' %}" target="_blank">P2P Reports</a>
+						</li>
+						<li class="">
+							<a href="{% url 'select_p2p_report' %}" target="_blank">Previous P2P Reports</a>
+						</li>	
+						
+					</ul>
 				</li>
-				<li>
-					<a href="/dashboard" class="article">Dashboard</a>
-				</li>
+				{% endif %}
+				
 			</ul>
+			{% if request.user|has_group:"feedback_admin" or request.user.is_superuser %}
+				<ul class="list-unstyled CTAs">
+					<li>
+						<a href="{% url 'admin:index' %}" class="article">Admin</a>
+					</li>
+					<li>
+						<a href="{% url 'easy_upload_settings' %}" class="download" >Settings</a>
+					</li>
+				</ul>
+			{% endif %}
+			<div class="text-center">
+				Powered by <a href="https://devxlabs.co" target="_blank"><span style="color: #1d2553;">DevX Labs</span></a>
+			</div>
 		</nav>
 
 		<!-- Page Content  -->

@@ -20,6 +20,7 @@ limitations under the License.
     <head>
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.js"></script>
 
         <title>Feedback Report</title>
 
@@ -74,7 +75,7 @@ limitations under the License.
                     <font color="#1c0565" size="5">BMS INSTITUTE OF TECHNOLOGY AND MANAGEMENT</font><br>
                     <font size="4" color="#1c0565">BENGALURU-64</font>
                     <h4><font size="4" face="arial"><strong>{{process.title}}<span id="time"> ({{process.date|date:"F, o"}})</span></strong></font></h4>
-                    <h6><font size="3" face="arial"><span><strong>Total No. of faculty: {{ count }} </strong></span></font></h6>
+                    <h6><font size="3" face="arial"><span><strong>Faculty: {{ request.user.first_name|title }} </strong></span></font></h6>
                 </div>
 
                 <div class="col-md-2 row justify-content-center mt-2 text-center">
@@ -88,7 +89,6 @@ limitations under the License.
                 <table class="table table-striped">
                     <thead style="color: #91a6ba;">
                         <tr>
-                            <th>Name</th>
                             <th>Subject</th>
                             <th>No. of Students</th>
                             <th>Semester</th>
@@ -101,7 +101,6 @@ limitations under the License.
                     </thead>
                     {% for rep in report %}
                         <tr>
-                            <td><span style="font-size:0.8em;">{{rep.teacher.first_name|title}} ({{rep.teacher.department.name}})</span></td>
                             <td><span style="font-size:0.8em;">{{rep.subject}}</span></td>
                             <td><span style="font-size:0.8em;">{{rep.count}}</span></td>
                             <td><span style="font-size:0.8em;">{{rep.sem}}</span></td>
@@ -114,8 +113,17 @@ limitations under the License.
                     {% endfor %}
 
                 </table>
+                <div class="row justify-content-center mt-4">
+                    <div class="col-lg-6">
+                        <center>
+                            <canvas id="report" style="height: 400px; width: 100%;"></canvas>
+                        </center>
+                    </div>
+                </div>
                 <div class="line no-print"></div>
             </div>
+
+
 
             <div class="row justify-content-center text-center no-print">
                 <div>
@@ -151,5 +159,83 @@ limitations under the License.
             today = dd + '/' + mm + '/' + yyyy;
             $('#time').html(today);
         </script>
+        <script>
+            var ctx = document.getElementById('report').getContext('2d');
+            Chart.defaults.global.legend.display = false;
+            var myChart = new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: [{% for i in report %}'{{ i.subject }} ({{i.department.name}})', {% endfor %}],
+                    datasets: [{
+                        label: '{{process.title}}',
+                        data: [{% for i in report %}{{ i.total }},{% endfor %}],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(26,206,197, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(242, 93, 12, 1)',
+                            'rgba(15, 136, 172, 1)',
+                            'rgba(255, 50, 50, 1)',
+                            'rgba(174, 254, 87, 1)',
+                            'rgba(62, 54, 109, 1)',
+                            'rgba(255, 255, 1, 1)',
+                            'rgba(0, 255, 0, 1)',
+                            'rgba(255, 0, 255, 1)',
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(26,206,197, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(242, 93, 12, 1)',
+                            'rgba(15, 136, 172, 1)',
+                            'rgba(255, 50, 50, 1)',
+                            'rgba(174, 254, 87, 1)',
+                            'rgba(62, 54, 109, 1)',
+                            'rgba(255, 255, 1, 1)',
+                            'rgba(0, 255, 0, 1)',
+                            'rgba(255, 0, 255, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                
+            });
+            Chart.plugins.register({
+                  afterDatasetsDraw: function(chartInstance, easing) {
+                      // To only draw at the end of animation, check for easing === 1
+                      var ctx = chartInstance.chart.ctx;
+
+                      chartInstance.data.datasets.forEach(function (dataset, i) {
+                          var meta = chartInstance.getDatasetMeta(i);
+                          if (!meta.hidden) {
+                              meta.data.forEach(function(element, index) {
+                                  // Draw the text in black, with the specified font
+                                  ctx.fillStyle = 'rgb(256, 256, 256)';
+
+                                  var fontSize = 14;
+                                  var fontStyle = 'normal';
+                                  var fontFamily = 'Helvetica Neue';
+                                  ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
+
+                                  // Just naively convert to string for now
+                                  var dataString = dataset.data[index].toString();
+
+                                  // Make sure alignment settings are correct
+                                  ctx.textAlign = 'center';
+                                  ctx.textBaseline = 'middle';
+
+                                  var padding = 5;
+                                  var position = element.tooltipPosition();
+                                  ctx.fillText(dataString, position.x, position.y - (fontSize / 2) - padding);
+                              });
+                          }
+                      });
+                  }
+              });
+            </script>
     </body>
 </html>

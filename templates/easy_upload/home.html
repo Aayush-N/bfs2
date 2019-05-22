@@ -1,100 +1,101 @@
 {% extends "easy_upload/base.html" %}
 {% load static %}
 {% block content %}
+{% load auth_extras %}
 
-{% if request.user.is_superuser %}
 <h2>Branchwise Student Feedbacks Pending</h2>
-{% else %}
-<h2>{{request.user.department.full_name}} Student Feedbacks Pending</h2>
-{% endif %}
 
 <div style="" class="card mt-4">
 
-  {% if request.user.is_superuser %}
-    <div class="m-3">
-      <canvas id="myChart-feedback-complete" style="height: 180px; width: 100%;"></canvas>
-    </div>
-  {% endif %}
+  <div class="m-3">
+    <canvas id="myChart-feedback-complete" style="height: 180px; width: 100%;"></canvas>
+  </div>
+
 
   <div class="content m-2">
-      <div class="row justify-content-center m-2">
-        {% for dept, count in completed.items %}
-          <div class="col-lg-2 m-2 card" style="background-color: #304878;"> <strong style="color: #eaecf1;">{{ dept }}:</strong> 
-            <span class='numscroller text-center' style="font-size: 40px; color: #fafafa;" data-min='0' data-max='{{ count }}' data-delay='5' data-increment='10'>
-              {{ count }}
-            </span>
-          </div>
-        {% endfor %}
-        {% if request.user.is_superuser %}
-            <div class="col-lg-2 m-2 card" style="background-color: #2851CC;"> <strong style="color: #eaecf1;">Total Pending:</strong> 
-              <span class='numscroller text-center' style="font-size: 50px; color: #fafafa;" data-min='0' data-max='{{ total }}' data-delay='5' data-increment='10'>
-                {{ total }}
-              </span>
-            </div>
-        {% endif %}
+    <div class="row justify-content-center m-2">
+      {% for dept, count in completed.items %}
+        <a class="col-lg-2 m-2 card" style="background-color: #304878;" href="{% url 'student-pending' dept_name=dept %}" target="_blank"> 
+          <strong style="color: #eaecf1;">{{ dept }}:</strong> 
+          <span class='numscroller text-center' style="font-size: 40px; color: #fafafa;" data-min='0' data-max='{{ count }}' data-delay='5' data-increment='10'>
+            {{ count }}
+          </span>
+        </a>
+      {% endfor %}
+      <div class="col-lg-2 m-2 card" style="background-color: #2851CC;"> 
+        <strong style="color: #eaecf1;">Total Pending:</strong> 
+        <span class='numscroller text-center' style="font-size: 40px; color: #fafafa;" data-min='0' data-max='{{ total }}' data-delay='5' data-increment='10'>
+          {{ total }}
+        </span>
       </div>
+    </div>
   </div>
 
 </div>
 <div class="line"></div>
 
-<div class="row justify-content-center">
-  {% for rep, value in report.items %}
-    {% if rep and value %}
-      <div class="card p-2 col-lg-5 m-1">
-        <h5 class="text-center mb-1">{{rep.title}}</h5>
-        <hr>
-        <canvas id="report-{{rep.id}}" style="height: 320px; width: 100%;"></canvas>
-      </div>
-    {% endif %}
-  {% endfor %}
-</div>
-
-<h2 class="mt-4">Sequence of uploading file</h2>
-<p>Always follow the following sequence while uploading data. Use this portal only to upload bulk data and use <a>admin</a> to do any kind of modifications. Download the CSV files from the link provided below. Make sure you follow the exact same format for uploading.</p>
-<p>Please contact Administrator if you face any problems.</p>
-{% if request.user.department.test_mode %}
-  <p>The<span style="color: #ff0000;"> Test Mode is on</span>. Please make sure the test mode is off if the process has already started. Test mode stops saving answers and is only used for testing. This also stops you from sending messages.</p>
+{% if request.user.is_faculty or request.user.is_hod %}
+  <div class="row justify-content-center">
+    {% for rep, value in report.items %}
+      {% if rep and value %}
+        <div class="card p-2 col-lg-5 m-1">
+          <h5 class="text-center mb-1">{{rep.title}}</h5>
+          <hr>
+          <canvas id="report-{{rep.id}}" style="height: 320px; width: 100%;"></canvas>
+          <a href="{% url 'teacher_previous_reports' id=rep.id %}" class="text-center mt-3" style="font-size: 12px;" target="_blank">View report</a>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
 {% endif %}
 
-<div class="row justify-content-center text-center">
-  <div class="col-lg-3 card shadow-sm m-1 p-2">
-    <a href="{% url "easy_upload_subject" %}"><h4>Subjects</h4></a>
-    <a href="{% static 'csv/subjects.csv' %}">
-      <small>Download example csv file</small>
-    </a>
-  </div>
-  <div class="col-lg-1 m-3 d-lg-block d-none arrow">
-    <i class="fas fa-arrow-circle-right"></i>
-  </div>
-  <div class="col-lg-1 m-3 d-block d-lg-none arrow">
-    <i class="fas fa-arrow-circle-down"></i>
-  </div>
-  <div class="col-lg-3 card shadow-sm m-1 p-2">
-    <a href="{% url "easy_upload_users" %}"><h4>Users</h4></a>
-    <a href="{% static 'csv/users.csv' %}">
-      <small>Dowbload example csv file</small>
-    </a>
-  </div>
-  <div class="col-lg-1 m-3 d-lg-block d-none arrow">
-    <i class="fas fa-arrow-circle-right"></i>
-  </div>
-  <div class="col-lg-1 m-3 d-block d-lg-none arrow">
-    <i class="fas fa-arrow-circle-down"></i>
-  </div>
-  <div class="col-lg-3 card shadow-sm m-1 p-2">
-    <a href="{% url "easy_upload_teaches" %}"><h4>Teaches</h4></a>
-    <a href="{% static 'csv/teaches.csv' %}">
-      <small>Download example csv file</small>
-    </a>
-  </div>
-</div>
+{% if request.user|has_group:"feedback_admin" %}
+  <h2 class="mt-4">Sequence of uploading file</h2>
+  <p>Always follow the following sequence while uploading data. Use this portal only to upload bulk data and use <a>admin</a> to do any kind of modifications. Download the CSV files from the link provided below. Make sure you follow the exact same format for uploading.</p>
+  <p>Please contact Administrator if you face any problems.</p>
+  {% if request.user.department.test_mode %}
+    <p>The<span style="color: #ff0000;"> Test Mode is on</span>. Please make sure the test mode is off if the process has already started. Test mode stops saving answers and is only used for testing. This also stops you from sending messages.</p>
+  {% endif %}
 
-<div class="line"></div>
+  <div class="row justify-content-center text-center">
+    <div class="col-lg-3 card shadow-sm m-1 p-2">
+      <a href="{% url "easy_upload_subject" %}"><h4>Subjects</h4></a>
+      <a href="{% static 'csv/subjects.csv' %}">
+        <small>Download example csv file</small>
+      </a>
+    </div>
+    <div class="col-lg-1 m-3 d-lg-block d-none arrow">
+      <i class="fas fa-arrow-circle-right"></i>
+    </div>
+    <div class="col-lg-1 m-3 d-block d-lg-none arrow">
+      <i class="fas fa-arrow-circle-down"></i>
+    </div>
+    <div class="col-lg-3 card shadow-sm m-1 p-2">
+      <a href="{% url "easy_upload_users" %}"><h4>Users</h4></a>
+      <a href="{% static 'csv/users.csv' %}">
+        <small>Dowbload example csv file</small>
+      </a>
+    </div>
+    <div class="col-lg-1 m-3 d-lg-block d-none arrow">
+      <i class="fas fa-arrow-circle-right"></i>
+    </div>
+    <div class="col-lg-1 m-3 d-block d-lg-none arrow">
+      <i class="fas fa-arrow-circle-down"></i>
+    </div>
+    <div class="col-lg-3 card shadow-sm m-1 p-2">
+      <a href="{% url "easy_upload_teaches" %}"><h4>Teaches</h4></a>
+      <a href="{% static 'csv/teaches.csv' %}">
+        <small>Download example csv file</small>
+      </a>
+    </div>
+  </div>
 
-<div>
-  <p>You can validate your uploads using <a href="{% url "easy_upload_test" %}">this link</a>.</p>
-</div>
+  <div class="line"></div>
+
+  <div>
+    <p>You can validate your uploads using <a href="{% url "easy_upload_test" %}">this link</a>.</p>
+  </div>
+{% endif %}
 
 <script>
   var ctx = document.getElementById('myChart-feedback-complete').getContext('2d');

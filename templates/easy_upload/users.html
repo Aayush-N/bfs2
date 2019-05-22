@@ -74,7 +74,7 @@
               </ul>
             </div>
           {% endif %}
-          <form class="form-group" action="/easy-upload/users" method="post" enctype="multipart/form-data">
+          <form class="form-group" action="{% url 'easy_upload_users' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row text-center">
               <div class="upload-btn-wrapper m-1 col-lg-12">

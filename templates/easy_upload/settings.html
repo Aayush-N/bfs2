@@ -98,8 +98,9 @@
 
 <div class="line"></div>
 
-<h4>Start New Feedback Process</h4>
 {% if request.user.is_superuser %}
+<h4>Start New Feedback Process</h4>
+
   <div>
     <form class="form-group" action="/easy-upload/settings" method="post" enctype="multipart/form-data" onsubmit="return confirm('This will erase all the answers. Are you sure?');">
       {% csrf_token %}
@@ -109,6 +110,16 @@
         </div>
         <div class="m-1 col-lg-8">
           {% render_field form.title required="required" class="from-control" style="border-radius: 5px;" placeholder="Process Name"%}
+        </div>
+        
+        <div class="m-1 col-lg-2" style="color: #6d7fcc;">
+          Peer to Peer: 
+        </div>
+        <div class="col-lg-8">
+          <label class="switch">
+            {% render_field form.p2p class="from-control" style="border-radius: 5px;" placeholder="Process Name"%}
+            <span class="slider round"></span>
+          </label>
         </div>
         <div class="m-1 col-lg-2" style="color: #6d7fcc; font-size: 12px;">
           Current process:
@@ -121,15 +132,6 @@
         </div>
         <div class="m-1 col-lg-8" style="font-size: 12px;">
           {{current_process_p2p}}
-        </div>
-        <div class="m-1 col-lg-2" style="color: #6d7fcc;">
-          Peer to Peer: 
-        </div>
-        <div class="col-lg-6">
-          <label class="switch">
-            {% render_field form.p2p class="from-control" style="border-radius: 5px;" placeholder="Process Name"%}
-            <span class="slider round"></span>
-          </label>
         </div>
         <div class="m-1 col-lg-12">
           <p>Please note that starting a new process will completely erase all answers so it's advised to take a backup before doing this.</p>
@@ -150,16 +152,19 @@
       Generate
     </a>
   </div>
-{% endif %}
-<div class="line"></div>
 
-<h4>Institute Process</h4>
-<p>This will make institute boolean false for all the students in turn making institute feedback appear for each student.</p>
-<div class="row col-lg-3">
-  <a href="{% url 'institute_start' %}" class="button p-2">
-    Start Institute Process
-  </a>
-</div>
-<div class="line"></div>
+  <div class="line"></div>
+
+  <h4>Institute Process</h4>
+  <p>This will make institute boolean false for all the students in turn making institute feedback appear for each student.</p>
+  <div class="row col-lg-3">
+    <a href="{% url 'institute_start' %}" class="button p-2">
+      Start Institute Process
+    </a>
+  </div>
+  <div class="line"></div>
+
+{% endif %}
+
 
 {% endblock %}

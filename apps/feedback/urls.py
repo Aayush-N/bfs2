@@ -24,6 +24,16 @@ urlpatterns = [
 	url(r"^report-principal/$",views.select_teacher_principal.as_view(),name="principal-select-faculty"),
 	url(r"^select-report/$",views.select_report.as_view(),name="select_report"),
 	url(r"^previous-report/(?P<id>[-\w.]+)/$",views.previous_consolidated,name="previous_reports"),
+
+	url(r"^select-p2p-report/$",views.select_p2p_report.as_view(),name="select_p2p_report"),
+	url(r"^previous-p2p-report/(?P<id>[-\w.]+)/$",views.previous_p2p_consolidated,name="previous_p2p_reports"),
+
+	url(r"^teacher-select-report/$",views.teacher_select_report.as_view(),name="teacher_select_report"),
+	url(r"^teacher-previous-report/(?P<id>[-\w.]+)/$",views.teacher_previous_reports,name="teacher_previous_reports"),
+
+	url(r"^teacher-select-p2p-report/$",views.teacher_select_p2p_report.as_view(),name="teacher_select_p2p_report"),
+	url(r"^teacher-previous-p2p-report/(?P<id>[-\w.]+)/$",views.teacher_previous_p2p_reports,name="teacher_previous_p2p_reports"),
+
 	url(r"^__/__/--/__/__sreports/(?P<username>[-\w.]+)/$",views.Test_report,name="sreports-url"),
 ]
 
