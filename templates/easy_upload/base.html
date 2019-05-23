@@ -375,6 +375,11 @@
 					</ul>
 				</li>
 				{% endif %}
+				{% if request.user.is_hod %}
+					<li class="">
+						<a href="{% url 'hod-select-faculty' %}" target="_blank">Individual Faculty Report</a>
+					</li>
+				{% endif %}
 				
 			</ul>
 			{% if request.user|has_group:"feedback_admin" or request.user.is_superuser %}

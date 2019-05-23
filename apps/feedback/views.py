@@ -580,7 +580,6 @@ def sconsolidated(request, username):
 	template_name = "feedback/student_report.html"
 	user = get_user_model().objects.get(username=username)
 	loggedin_user = request.user
-	print(loggedin_user)
 	user_type = loggedin_user.get_user_type()
 	department = loggedin_user.department
 	if user_type[0].name == "AnonymousUser":
