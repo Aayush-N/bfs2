@@ -87,7 +87,7 @@
 {% endif %}
 
 <div class="row col-lg-3">
-  <a href="{% url "test_mode" %}" class="button p-2">
+  <a href="{% url 'test_mode' %}" class="button p-2">
     Turn test mode {% if not request.user.department.test_mode %} On {% else %} Off {% endif %}
   </a>
 </div>

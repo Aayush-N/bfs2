@@ -30,8 +30,8 @@ urlpatterns = [
     url(r"^send_message/", views.send_text_message_view, name="send_text_message_view"),
     url(r"^progress/", views.show_message_sent_view, name="show_message_sent_view"),
     url(r"^ping-report/$", views.ping_url, name="ping_url"),
-    url(r"^test-mode", views.test_mode, name="test_mode"),
-    url(r"^institute-start", views.start_institute_feedback, name="institute_start"),
+    url(r"^test-mode/$", views.test_mode, name="test_mode"),
+    url(r"^institute-start/$", views.start_institute_feedback, name="institute_start"),
     # Easy Upload URLs
     url(r"^dashboard/$", views.easy_upload, name="dashboard"),
     url(r"^dashboard/upload-subject/$", views.easy_upload_subject, name="easy_upload_subject"),

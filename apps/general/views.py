@@ -748,7 +748,7 @@ def ping_url(request):
 
 	# print("Count", count)
 
-	return HttpResponseRedirect('/easy-upload/settings')
+	return HttpResponseRedirect('/dashboard/settings')
 
 
 # @login_required(login_url='/signin/')
@@ -1830,7 +1830,7 @@ def test_mode(request):
 			department.test_mode=True
 			department.save()
 
-		return HttpResponseRedirect('/easy-upload/settings')
+		return HttpResponseRedirect('/dashboard/settings')
 
 	else:
 		return HttpResponseRedirect('/dashboard')
@@ -1843,7 +1843,7 @@ def start_institute_feedback(request):
 
 		users = User.objects.filter(user_type__name__in=['Student']).update(institute=False)
 		messages.success(request, "Institute Feedback Started")
-		return HttpResponseRedirect('/easy-upload/settings')
+		return HttpResponseRedirect('/dashboard/settings')
 
 	else:
 		return HttpResponseRedirect('/dashboard')
