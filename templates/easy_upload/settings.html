@@ -102,7 +102,7 @@
 <h4>Start New Feedback Process</h4>
 
   <div>
-    <form class="form-group" action="/easy-upload/settings" method="post" enctype="multipart/form-data" onsubmit="return confirm('This will erase all the answers. Are you sure?');">
+    <form class="form-group" action="{% url 'easy_upload_settings' %}" method="post" enctype="multipart/form-data" onsubmit="return confirm('This will erase all the answers. Are you sure?');">
       {% csrf_token %}
       <div class="row">
         <div class="m-1 col-lg-2" style="color: #6d7fcc;">

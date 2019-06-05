@@ -1882,7 +1882,9 @@ def easy_upload_settings(request):
 		}
 
 		if request.method == 'POST':
+			
 			form = FeedbackProcessForm(request.POST)
+
 			if form.is_valid():
 
 				# Creating new process
