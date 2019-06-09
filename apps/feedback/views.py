@@ -838,7 +838,7 @@ def student_view_consolidated(request):
 	This view displays the consolidated reports of all the faculty
 	of all the departments.
 	"""
-	if not (request.user.is_superuser or request.user.is_principal()):
+	if not (request.user.is_superuser or request.user.is_principal() or request.user.is_hod()):
 		return HttpResponseRedirect(reverse_lazy("dashboard"))
 	template_name = "student_consolidated_report.html"
 
@@ -848,7 +848,11 @@ def student_view_consolidated(request):
 	# print("Report",report)
 	department = {}
 	total_count = 0
-	departments = Department.objects.filter(d_type='teaching').order_by('id')
+
+	if request.user.is_hod():
+		departments = Department.objects.filter(d_type='teaching', id=request.user.department.id).order_by('id')
+	else:
+		departments = Department.objects.filter(d_type='teaching').order_by('id')
 
 
 	# print("_-_-_")
@@ -878,7 +882,7 @@ def student_view_consolidated_sixty(request):
 	reports are less than sixty
 	"""
 	if not (request.user.is_superuser or request.user.is_principal()):
-		print(request.user.is_superuser)
+		# print(request.user.is_superuser)
 		return HttpResponseRedirect(reverse_lazy("dashboard"))
 	template_name = "student_consolidated_report_sixty.html"
 	current_process = FeedbackProcess.objects.filter(p2p=False).order_by('-id')[0]
@@ -912,10 +916,10 @@ class Student_Report(TemplateView):
 		current_process = FeedbackProcess.objects.all().order_by('-id')[0]
 		# user_type = user.get_user_type()
 		forms = FeedbackForm.objects.filter(user_type__name="Student", active=True)
-		print(forms)
+		# print(forms)
 		results = dict()
 		for form in forms:
-			print(form)
+			# print(form)
 			answers = StudentAnswer.objects.filter(
 				form=form, teacher__teacher__username=user.username
 			)

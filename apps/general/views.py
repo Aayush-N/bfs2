@@ -23,6 +23,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 import json
 import csv
@@ -1711,11 +1712,14 @@ def easy_upload(request):
 			completed[dept['name']] = User.objects.filter(department__name=dept['name'], is_active=True, user_type__name="Student", done=False).count()
 			total += completed[dept['name']]
 
+		teaches = Teaches.objects.filter(teacher=request.user)
+
 		context = {
 				"home":True,
 				"completed":completed,
 				"total": total,
 				"report":report,
+				"teaches":teaches,
 		}
 		return render(request, template_name, context)
 	else:
@@ -1864,6 +1868,14 @@ def teachers_list(request):
 	else:
 		return HttpResponseRedirect('/dashboard')
 
+def done_change(department, sem, sec, done):
+	""""""
+	print("Value: ", done)
+	for dept in department:
+		for i in sem:
+			for j in sec:
+				user = User.objects.filter(Q(user_type__name__in=['Student']) & Q(department=dept) & Q(sem=i) & (Q(sec=j) | Q(sec=j.lower()))).update(done=done)
+				print(user)
 @login_required
 def easy_upload_settings(request):
 	"""
@@ -1879,10 +1891,30 @@ def easy_upload_settings(request):
 				"current_process":current_process,
 				"current_process_p2p":current_process_p2p,
 				"form": FeedbackProcessForm(),
+				"second_form": DoneChangeForm(),
 		}
 
-		if request.method == 'POST':
+		if request.method == 'POST' and 'done' in request.POST:
+			# print("Second form submitted")
+			form = DoneChangeForm(request.POST)
+			if form.is_valid():
+
+				departments = form.cleaned_data['department']
+				semester = form.cleaned_data['sem']
+				sec = form.cleaned_data['sec']
+				done = form.cleaned_data['val']
+
+				t = threading.Thread(target=done_change, args=(departments, semester, sec, done))
+				t.setDaemon(True)
+				t.start()
+
+				messages.success(request, 'The done will be changed please wait for a few minutes.')
+
+			return render(request, template_name, context)
+
+		elif request.method == 'POST':
 			
+			print("First Form")
 			form = FeedbackProcessForm(request.POST)
 
 			if form.is_valid():

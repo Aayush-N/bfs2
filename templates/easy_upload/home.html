@@ -17,14 +17,14 @@
       {% for dept, count in completed.items %}
         <a class="col-lg-2 m-2 card" style="background-color: #304878;" href="{% url 'student-pending' dept_name=dept %}" target="_blank"> 
           <strong style="color: #eaecf1;">{{ dept }}:</strong> 
-          <span class='numscroller text-center' style="font-size: 40px; color: #fafafa;" data-min='0' data-max='{{ count }}' data-delay='5' data-increment='10'>
+          <span class='numscroller text-center' style="font-size: 40px; color: #fafafa;" data-min='0' data-max='{{ count }}' data-delay='5' data-increment='2'>
             {{ count }}
           </span>
         </a>
       {% endfor %}
       <div class="col-lg-2 m-2 card" style="background-color: #2851CC;"> 
         <strong style="color: #eaecf1;">Total Pending:</strong> 
-        <span class='numscroller text-center' style="font-size: 40px; color: #fafafa;" data-min='0' data-max='{{ total }}' data-delay='5' data-increment='10'>
+        <span class='numscroller text-center' style="font-size: 40px; color: #fafafa;" data-min='0' data-max='{{ total }}' data-delay='5' data-increment='3'>
           {{ total }}
         </span>
       </div>
@@ -46,6 +46,58 @@
         </div>
       {% endif %}
     {% endfor %}
+
+    {% if teaches %}
+      <div class="card p-2 col-lg-12 m-1 mt-4">
+        <h5 class="text-center mb-1">Your subjects for the current feedback</h5>
+          <hr>
+        <div class="table-responsive table-hover">
+          <table class="table">
+            <thead>
+              <tr>
+                <td>DEPARTMENT</td>
+                <td>SEMESTER</td>
+                <td>SECTION</td>
+                <td>BATCH</td>
+                <td>SUB BATCH</td>
+                <td>SUBJECT</td>
+                <td>UG/PG</td>
+                <td>COUNT</td>
+              </tr>
+            </thead>
+            <tbody>
+                {% for teach in teaches %}
+                  <tr valign="middle">
+                    <td>{{teach.department}}</td>
+                    <td>{{teach.sem}}</td>
+                    <td >{{teach.sec}}</td>
+                    {% if teach.batch %}
+                      <td>{{teach.batch}}</td>
+                    {% else %}
+                      <td>-</td>
+                    {% endif %}
+                    {% if teach.sub_batch %}
+                      <td>{{teach.sub_batch}}</td>
+                    {% else %}
+                      <td>-</td>
+                    {% endif %}
+                    <td>{{teach.subject.name}}</td>
+                    {% if teach.ug %}
+                      <td>UG</td>
+                    {% else %}
+                      <td>PG</td>
+                    {% endif %}
+                    <td>{{teach.count}}</td>
+                  </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <p class="text-center" style="font-size: 12px;">
+          Note: If you find any discrepancies, please contact the feedback admin of {{request.user.department.full_name}} department.
+        </p>
+      </div>
+    {% endif %}
   </div>
 {% endif %}
 

@@ -3,6 +3,10 @@
 {% load widget_tweaks %}
 {% block content %}
 
+<link rel="stylesheet" href="/css/prettydropdowns.css">
+<script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+<script src="/js/jquery.prettydropdowns.js"></script>
+
 <style type="text/css">
   a.button:hover{
     background-color: white;
@@ -66,6 +70,20 @@
 
     .slider.round:before {
       border-radius: 50%;
+    }
+
+    #output {
+      padding: 20px;
+      background: #dadada;
+    }
+
+    form {
+      margin-top: 20px;
+    }
+
+    select {
+      width: 300px;
+    }
 </style>
 
 {% if messages %}
@@ -109,7 +127,7 @@
           Start new process:
         </div>
         <div class="m-1 col-lg-8">
-          {% render_field form.title required="required" class="from-control" style="border-radius: 5px;" placeholder="Process Name"%}
+          {% render_field form.title required="required" class="form-control" style="border-radius: 5px;" placeholder="Process Name"%}
         </div>
         
         <div class="m-1 col-lg-2" style="color: #6d7fcc;">
@@ -117,7 +135,7 @@
         </div>
         <div class="col-lg-8">
           <label class="switch">
-            {% render_field form.p2p class="from-control" style="border-radius: 5px;" placeholder="Process Name"%}
+            {% render_field form.p2p class="form-control" style="border-radius: 5px;" placeholder="Process Name"%}
             <span class="slider round"></span>
           </label>
         </div>
@@ -145,6 +163,54 @@
 
   <div class="line"></div>
 
+  <h4>Change done to True or False</h4>
+
+  <div>
+    <form class="form-group" action="{% url 'easy_upload_settings' %}" method="post" enctype="multipart/form-data" onsubmit="return confirm('This will change \'done\' True or False for the Selected option. Are you sure?');">
+      {% csrf_token %}
+      <div class="row">
+        <div class="m-1 col-lg-2" style="color: #6d7fcc;">
+          Department:
+        </div>
+        <div class="m-1 col-lg-8">
+          {% render_field second_form.department required="required" class="form-control" multiple="multiple" %}
+        </div>
+
+        <div class="m-1 col-lg-2" style="color: #6d7fcc;">
+          Semester:
+        </div>
+        <div class="m-1 col-lg-8">
+          {% render_field second_form.sem required="required" class="form-control" multiple="multiple" %}
+        </div>
+
+        <div class="m-1 col-lg-2" style="color: #6d7fcc;">
+          Section:
+        </div>
+        <div class="m-1 col-lg-8">
+          {% render_field second_form.sec required="required" class="form-control" style="border-radius: 5px;" placeholder="Section"%}
+        </div>
+        <div class="m-1 col-lg-2">
+        </div>
+        <div class="m-1 col-lg-8" style="font-size: 12px;">
+          Note: Hold CTRL or CMD to select multiple values.
+        </div>
+        <div class="m-1 col-lg-2" style="color: #6d7fcc;">
+          True/False: 
+        </div>
+        <div class="col-lg-8">
+          <label class="switch">
+            {% render_field second_form.val class="form-control" %}
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="col-lg-12">
+          <input type="submit" class="btn m-1" value="submit" style="color: #fafafa; background-color: #6d7fcc;" name="done">
+        </div>
+    </form>
+  </div>
+
+  <div class="line"></div>
+
   <h4>Generate Report</h4>
   <p class="mt-2">This will generate the consolidated reports. This is used if all the teachers haven't opened their reports yet. <strong>Note: </strong>The consolidated reports are only generated if all the faculty have opened their reports.</p>
   <div class="row col-lg-3 mt-4">
@@ -163,6 +229,12 @@
     </a>
   </div>
   <div class="line"></div>
+
+  <script>
+    $(document).ready(function() {
+      $('select').prettyDropdown();
+    });
+  </script>
 
 {% endif %}
 

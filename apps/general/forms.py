@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django import forms
-from .models import Message
+from .models import Message, Department, Semester
+import string
 
 
 class LoginForm(AuthenticationForm):
@@ -32,6 +33,18 @@ class LoginForm(AuthenticationForm):
             }
         ),
     )
+
+class DoneChangeForm(forms.Form):
+    """docstring for DoneChangeForm"""
+
+    SEC_CHOICE = ((x, x) for x in string.ascii_uppercase)
+    SEM_CHOICE = ((x, x) for x in range(1,9))
+
+    department = forms.ModelMultipleChoiceField(queryset=Department.objects.all())
+    sem = forms.MultipleChoiceField(choices=SEM_CHOICE)
+    sec = forms.MultipleChoiceField(choices=SEC_CHOICE)
+    val = forms.BooleanField(required=False)
+        
 
 class FileUploadForm(forms.Form):
     file = forms.FileField()
