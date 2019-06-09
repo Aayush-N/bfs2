@@ -215,8 +215,8 @@ class HomeView(FormView):
 			if not qs.done or not qs.is_student():
 
 				if qs:
-					# Checks if both email and phone doesn't exist
-					if qs.department.test_mode:
+					# Checks if testmode is on or not
+					if qs.department.test_mode and qs.is_student():
 						self.password_update(random_otp, usn)
 						messages.error(
 							request, "The OTP is \n" + random_otp + " NOTE: If you're a student please don't give feedback, your answers won't be saved. Please contact your department coordinator."
